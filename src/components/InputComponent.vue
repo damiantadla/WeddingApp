@@ -15,9 +15,7 @@
     </div>
 </template>
 <script setup>
-import { defineProps, defineEmits } from 'vue'
-
-defineProps(['icon', 'type', 'placeholder', 'modelValue', 'isIcone'])
+const props = defineProps(['icon', 'type', 'placeholder', 'modelValue'])
 const emits = defineEmits(['update:modelValue'])
 
 const handleInput = (event) => {

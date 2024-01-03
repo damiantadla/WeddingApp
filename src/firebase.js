@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,46 +21,9 @@ const firebaseConfig = {
 
 // init firebase
 const app = initializeApp(firebaseConfig)
-
+const storage = getStorage(app)
 const db = getFirestore(app)
-// init firebase auth
+
 const auth = getAuth()
 
-import {
-    collection,
-    getDoc,
-    getDocs,
-    addDoc,
-    doc,
-    setDoc,
-} from 'firebase/firestore'
-
-// try {
-// const docRef = await addDoc(collection(db, 'users'), {
-//     first: 'Ada',
-//     last: 'Lovelace',
-//     born: 1815,
-// })
-//     const userCollection = collection(db, 'users')
-//     const customRef = doc(userCollection, '1234')
-//     await setDoc(customRef, {
-//         name: 'Damian',
-//         surname: 'Tadla',
-//     })
-// } catch (e) {
-//     console.error('Error adding document: ', e)
-// }
-
-// try {
-//     const userId = '8o1AJgp6uDyYAWDjHi97'
-//     const usersCollectionRef = collection(db, 'users')
-//     const userDocRef = doc(usersCollectionRef, userId)
-//     const userPostsCollectionRef = collection(userDocRef, 'notes')
-//     const querySnapshot = await getDocs(userPostsCollectionRef)
-//     querySnapshot.forEach((doc) => {
-//         console.log('Dane posta:', doc.data())
-//     })
-// } catch (e) {
-//     console.log(e)
-// }
-export { auth, db }
+export { auth, db, storage }

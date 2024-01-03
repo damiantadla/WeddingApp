@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, defineEmits } from 'vue'
+import { reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 

@@ -5,6 +5,5 @@
     </button>
 </template>
 <script setup>
-import { defineProps } from 'vue'
-defineProps(['text', 'icon'])
+const props = defineProps(['text', 'icon'])
 </script>

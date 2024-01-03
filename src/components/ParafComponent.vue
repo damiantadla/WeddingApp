@@ -4,7 +4,5 @@
     </p>
 </template>
 <script setup>
-import { defineProps } from 'vue'
-
-defineProps(['text', 'textBold'])
+const props = defineProps(['text', 'textBold'])
 </script>
