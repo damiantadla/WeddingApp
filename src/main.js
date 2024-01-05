@@ -27,10 +27,21 @@ import 'vue3-toastify/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import store from './stores/index.js'
-
+import { QuillEditor } from '@vueup/vue-quill'
 import VueCookies from 'vue3-cookies'
 
+//add Vuetify
+
+import { createVuetify } from 'vuetify'
+import * as directives from 'vuetify/directives'
+import * as components from 'vuetify/components'
+
+const vuetify = createVuetify({
+    components,
+    directives,
+})
 const app = createApp(App)
+app.component('QuillEditor', QuillEditor)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(store)
 app.use(VueCookies)
@@ -39,5 +50,6 @@ app.use(Vue3Toastify, {
     autoClose: 3000,
     position: 'top-center',
 })
+app.use(vuetify)
 
 app.mount('#app')

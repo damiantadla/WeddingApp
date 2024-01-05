@@ -46,7 +46,7 @@ const registerFunction = async () => {
             class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto"
         >
             <div class="flex flex-col justify-center items-center mt-10">
-                <TitleComponent text="Register" />
+                <TitleComponent text="Sign up for free" />
             </div>
             <div class="flex flex-col justify-center items-center mt-4">
                 <InputComponent
@@ -93,10 +93,14 @@ const registerFunction = async () => {
                     class="w-80 flex justify-center mt-12 font-bold"
                 />
             </div>
+            <p class="w-80 text-center mt-5">
+                By signing in or creating an account you agree with our
+                <u>Terms and Conditions</u> and <u>Privacy Statement</u>
+            </p>
         </div>
         <font-awesome-icon
             @click="emitClickBack"
-            class="mt-20 pl-8 text-white text-6xl"
+            class="mt-15 pl-8 text-white text-6xl"
             :icon="['fas', 'circle-left']"
         />
     </div>

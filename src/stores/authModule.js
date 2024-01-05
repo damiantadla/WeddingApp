@@ -29,7 +29,7 @@ export default {
     actions: {
         async update(
             { rootState },
-            { partnerWedding, placeWedding, dateWedding },
+            { partnerWedding, placeWedding, dateWedding, imgURL },
         ) {
             const userDataRef = doc(db, 'users', rootState.user.uid)
             try {
@@ -37,6 +37,7 @@ export default {
                     partnerWedding,
                     placeWedding,
                     dateWedding,
+                    imgURL,
                 })
                 show.success('Updated data')
             } catch (error) {
@@ -86,16 +87,22 @@ export default {
                     password,
                 )
                 const user = res.user
+                commit('setUser', user, '123')
                 if (user.emailVerified) {
-                    const docRef = doc(db, 'users', user.uid)
-                    const docSnap = await getDoc(docRef)
-                    const data = docSnap.data()
-                    dispatch('getDoc', {
+                    const data = await dispatch('getDoc', {
+                        collectionID: 'users',
+                        docID: user.uid,
+                    })
+
+                    console.log(data)
+                    const quote = await dispatch('getDoc', {
                         collectionID: 'quotations',
                         docID: 'quotations',
                     })
-                    commit('setData', data)
+
                     commit('setUser', user)
+                    commit('setData', data)
+                    commit('setQuote', quote)
                     cookies.set('user', user.uid)
                     show.success('Logged in')
                 } else {
@@ -144,13 +151,14 @@ export default {
                 await signOut(auth)
                 commit('removeUser')
                 commit('removeData')
+                commit('removeQuote')
                 cookies.remove('user')
                 show.success('Logged out')
             } catch (error) {
                 show.error(error.code)
             }
         },
-        async recoverPassword({ email }) {
+        async recoverPassword({ commit }, { email }) {
             try {
                 await sendPasswordResetEmail(auth, email)
                 show.success('Email sent successfully')

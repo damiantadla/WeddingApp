@@ -23,10 +23,14 @@ onBeforeMount(() => {
 })
 
 const loginFunction = async () => {
-    await store.dispatch('login', {
-        email: email.value,
-        password: password.value,
-    })
+    try {
+        await store.dispatch('login', {
+            email: email.value,
+            password: password.value,
+        })
+    } catch (error) {
+        console.log(error)
+    }
     if (store.state.user.uid) router.replace('/user')
 }
 

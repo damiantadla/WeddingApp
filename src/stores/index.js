@@ -20,6 +20,7 @@ const store = createStore({
             manageLocalStorage.rm('user')
         },
         setData(state, data) {
+            console.log(data)
             state.data = data
             manageLocalStorage.set('data', data)
         },
@@ -31,9 +32,13 @@ const store = createStore({
             state.data = { ...state.data, ...data }
             manageLocalStorage.set('data', state.data)
         },
-        setQuote(state, data) {
-            state.quote = data
-            manageLocalStorage.set('quote', data)
+        setQuote(state, payload) {
+            state.quote = payload
+            manageLocalStorage.set('quote', payload)
+        },
+        removeQuote(state) {
+            state.data = null
+            manageLocalStorage.rm('quote')
         },
     },
     actions: {
