@@ -1,8 +1,8 @@
 {
-  "semi": false,
-  "singleQuote": true,
-  "tabWidth": 4,
-  "useTabs": false,
-  "printWidth": 80,
-  "vueIndentScriptAndStyle": false
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "printWidth": 100,
+    "vueIndentScriptAndStyle": false
 }

@@ -1,11 +1,12 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 
 import TitleComponent from '@/components/TitleComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
+import LoadingComponent from '@/components/LoadingComponent.vue'
 
 const emit = defineEmits(['clickBack'])
 
@@ -14,31 +15,41 @@ const emitClickBack = () => emit('clickBack')
 const store = useStore()
 
 const registerData = reactive({
-    email: '',
-    password: '',
-    name: '',
-    surname: '',
-    number: '',
+    email: null,
+    password: null,
+    name: null,
+    surname: null,
+    number: null,
 })
 
+const loading = ref(false)
+
 const registerFunction = async () => {
-    await store.dispatch('signup', {
-        email: registerData.email,
-        password: registerData.password,
-        name: registerData.name,
-        surname: registerData.surname,
-        number: registerData.number,
-    })
     if (
         registerData.email &&
         registerData.password &&
         registerData.name &&
-        registerData.surname
-    )
-        emitClickBack()
+        registerData.surname &&
+        registerData.number
+    ) {
+        try {
+            loading.value = true
+            await store.dispatch('signup', {
+                ...registerData,
+            })
+            emitClickBack()
+        } catch (error) {
+            toast.error(error)
+        } finally {
+            loading.value = false
+        }
+    } else {
+        toast.error('Please provide more information')
+    }
 }
 </script>
 <template>
+    <LoadingComponent v-if="loading" />
     <div
         class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto"
     >
@@ -84,13 +95,21 @@ const registerFunction = async () => {
                     type="number"
                     placeholder="Phone Number"
                 />
+                <div class="flex flex-row justify-center items-center mt-4">
+                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
+                    <font-awesome-icon
+                        class="text-red text-2xl px-5"
+                        :icon="['fas', 'heart']"
+                    />
+                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
+                </div>
             </div>
 
             <div class="flex flex-row justify-center">
                 <ButtonComponent
                     @click="registerFunction"
                     text="Register"
-                    class="w-80 flex justify-center mt-12 font-bold"
+                    class="w-80 flex justify-center mt-5 font-bold"
                 />
             </div>
             <p class="w-80 text-center mt-5">
@@ -100,7 +119,7 @@ const registerFunction = async () => {
         </div>
         <font-awesome-icon
             @click="emitClickBack"
-            class="mt-15 pl-8 text-white text-6xl"
+            class="pl-8 py-8 text-white text-6xl"
             :icon="['fas', 'circle-left']"
         />
     </div>

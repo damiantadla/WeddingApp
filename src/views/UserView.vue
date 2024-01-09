@@ -14,48 +14,42 @@ import ParafComponent from '@/components/ParafComponent.vue'
 import { toast } from 'vue3-toastify'
 
 import { storage } from '../firebase'
-import {
-    ref as storageRef,
-    getDownloadURL,
-    uploadBytes,
-} from 'firebase/storage'
+import { ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'
 
 const store = useStore()
 const router = useRouter()
 const { cookies } = useCookies()
 
 let randomQuote
-const daysDifference = ref(0)
+const daysDifference = ref(null)
 
-onBeforeMount(() => {
+const changeDate = (date) => {
+    const milliseconds = new Date(date).getTime() - new Date().getTime()
+    const days = Math.round(milliseconds / (1000 * 60 * 60 * 24))
+    console.log(days)
+    if (days <= 0) return 'Congratulations'
+    else return days
+}
+
+onBeforeMount(async () => {
     if (!cookies.isKey('user')) {
         router.push('/')
     }
-})
-
-onBeforeMount(async () => {
     if (store.state.quote) {
         const quotations = store.state.quote
-        const randomNumber = Math.floor(
-            Math.random() * Object.keys(quotations).length + 1,
-        )
+        const randomNumber = Math.floor(Math.random() * Object.keys(quotations).length + 1)
         randomQuote = quotations[randomNumber]
     }
 
     if (store.state.data?.dateWedding) {
-        const days =
-            new Date(store.state.data.dateWedding).getTime() -
-            new Date().getTime()
-        daysDifference.value = Math.round(days / (1000 * 60 * 60 * 24))
+        daysDifference.value = changeDate(store.state.data.dateWedding)
     }
 })
 
 const visibleMenu = ref(false)
 
 const showMenu = () => {
-    !visibleMenu.value
-        ? (visibleMenu.value = true)
-        : (visibleMenu.value = false)
+    !visibleMenu.value ? (visibleMenu.value = true) : (visibleMenu.value = false)
 }
 
 const data = reactive({
@@ -66,47 +60,37 @@ const data = reactive({
 })
 
 const imageFile = ref(null)
-const loading = ref(false)
 
 const handleFileChange = async (e) => {
-    imageFile.value = e.target.files[0]
+    if (e.target.files[0]) {
+        imageFile.value = e.target.files[0]
+        const reader = new FileReader()
+
+        reader.onload = (e) => {
+            data.imgURL = e.target.result
+        }
+        reader.readAsDataURL(e.target.files[0])
+    }
 }
+
+const loading = ref(false)
+
 const updateData = async () => {
     if (imageFile.value) {
         loading.value = true
-        console.log('rozpoczeto') // Rozpoczęcie ładowania
-
-        // Utwórz referencję do pliku, używając metody child
-        const imgRef = storageRef(storage, `${store.state.user.uid}/logo`)
 
         try {
-            await uploadBytes(imgRef, imageFile.value)
-            const url = await getDownloadURL(imgRef) // Użyj tej samej referencji
-
-            data.imgURL = url
-            console.log('Wykonało się')
-            if (
-                data.partnerWedding &&
-                data.placeWedding &&
-                data.dateWedding &&
-                data.imgURL
-            ) {
-                console.log('kiedy sie wykona')
-                store.commit('updateData', data)
-                store.dispatch('update', data)
-                console.log('po sie wykona')
-                const days =
-                    new Date(store.state.data.dateWedding).getTime() -
-                    new Date().getTime()
-                daysDifference.value = Math.round(days / (1000 * 60 * 60 * 24))
+            if (data.partnerWedding && data.placeWedding && data.dateWedding && data.imgURL) {
+                await store.dispatch('upoladFileAndGetURLFile', {
+                    imageFile: imageFile.value,
+                    data,
+                })
+                daysDifference.value = changeDate(store.getters.getData.dateWedding)
             } else {
-                toast.error('Proszę podać więcej informacji')
+                toast.error('Please provide more information')
             }
-        } catch (error) {
-            console.error('Błąd podczas przesyłania pliku:', error)
         } finally {
             loading.value = false
-            console.log('zakoczono')
         }
     }
 }
@@ -143,22 +127,21 @@ const updateData = async () => {
                 v-model="data.dateWedding"
                 type="date"
             />
-            <TitleComponent text="Your photo" class="pt-8" />
+            <TitleComponent text="Your photo" class="mt-8 mb-8" />
+            <img
+                v-if="data.imgURL"
+                :src="data.imgURL"
+                alt="Your img"
+                class="w-[100px] h-[100px] object-cover rounded-full"
+            />
             <input
-                class="text-lg relative w-80 rounded-lg p-3"
+                class="text-lg relative w-80 rounded-lg pt-8"
                 type="file"
                 @change="handleFileChange"
             />
-            <ButtonComponent
-                text="Update"
-                @click="updateData()"
-                class="mt-10"
-            />
+            <ButtonComponent text="Update" @click="updateData()" class="mt-10" />
         </div>
-        <div
-            v-else
-            class="w-full pt-10 flex flex-col justify-center items-center text-white"
-        >
+        <div v-else class="w-full pt-10 flex flex-col justify-center items-center text-white">
             <TitleComponent text="Countdown to Wedding" />
             <p class="font-bold text-xl">
                 {{ store.state.data.partnerWedding }}
@@ -172,14 +155,25 @@ const updateData = async () => {
                 class="object-cover rounded-full w-[300px] h-[300px] mt-8"
             />
 
-            <p class="font-extrabold text-7xl text-red mt-5">
-                {{ daysDifference }}
-            </p>
-
-            <div class="flex flex-row justify-center items-center mt-4">
-                <div class="w-[40px] h-[1.5px] bg-gray-400"></div>
-                <TitleComponent class="px-5" text="Days" />
-                <div class="w-[40px] h-[1.5px] bg-gray-400"></div>
+            <div v-if="typeof daysDifference === 'string' ? true : false">
+                <p class="font-extrabold text-4xl text-red mt-5">
+                    {{ daysDifference }}
+                </p>
+                <div class="flex flex-row justify-center m-auto items-center mt-4">
+                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
+                    <font-awesome-icon class="text-red text-2xl px-5" :icon="['fas', 'heart']" />
+                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
+                </div>
+            </div>
+            <div v-else>
+                <p class="font-extrabold text-7xl text-red mt-5 text-center">
+                    {{ daysDifference }}
+                </p>
+                <div class="flex flex-row justify-center items-center mt-4">
+                    <div class="w-[40px] h-[1.5px] bg-gray-400"></div>
+                    <TitleComponent class="px-5" text="Days" />
+                    <div class="w-[40px] h-[1.5px] bg-gray-400"></div>
+                </div>
             </div>
             <p class="text-center mt-4 px-20">{{ randomQuote }}</p>
         </div>

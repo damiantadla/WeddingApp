@@ -1,42 +1,59 @@
-import {
-    collection,
-    setDoc,
-    getDoc,
-    getDocs,
-    addDoc,
-    doc,
-} from 'firebase/firestore'
-import { auth, db, storage } from '../firebase'
+import { collection, setDoc, getDoc, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore'
+import { show } from './showInfoUtils'
+import { db, storage } from '../firebase'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
 
 export default {
     actions: {
-        async getDoc({ commit }, { collectionID, docID }) {
+        async createDoc(context, { data, path, id }) {
+            const userCollection = collection(db, `${path}`)
+            const userCollectionRef = doc(userCollection, id)
+            await setDoc(userCollectionRef, {
+                ...data,
+            })
+        },
+
+        async setDoc(context, { data, path }) {
+            await addDoc(collection(db, `${path}`), {
+                ...data,
+            })
+        },
+        async getDoc(context, { collectionID, docID }) {
             const docRef = doc(db, collectionID, docID)
             const docSnap = await getDoc(docRef)
             const data = docSnap.data()
-            console.log(data)
             return data
         },
 
-        async getURLFile({ commit }, { file }) {
-            try {
-                const fileRef = ref(storage, file)
-                const downloadURL = await getDownloadURL(fileRef)
-                return downloadURL
-            } catch (error) {
-                console.log(error)
-            }
+        async getDocs(context, { path }) {
+            const querySnapshot = await getDocs(collection(db, path))
+            return querySnapshot
         },
 
-        async uploadFile({ commit }, { src, file }) {
-            console.log(file)
-            const storageRef = ref(storage, `${src}/${file}`)
+        async updateDoc({ rootState }, { partnerWedding, placeWedding, dateWedding, imgURL }) {
+            const userDataRef = doc(db, 'users', rootState.user.uid)
             try {
-                const value = await uploadBytes(storageRef, file)
-                return value
+                await updateDoc(userDataRef, {
+                    partnerWedding,
+                    placeWedding,
+                    dateWedding,
+                    imgURL,
+                })
+                show.success('Updated data')
             } catch (error) {
-                console.log(error)
+                show.error(error.message)
+            }
+        },
+        async upoladFileAndGetURLFile({ commit, dispatch }, { imageFile, data }) {
+            const imgRef = ref(storage, `${this.state.user.uid}/logo`)
+            try {
+                await uploadBytes(imgRef, imageFile)
+                const url = await getDownloadURL(imgRef)
+                await dispatch('updateDoc', data)
+                await commit('updateData', data)
+                return url
+            } catch (error) {
+                show.error(error.code)
             }
         },
     },

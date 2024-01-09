@@ -31,7 +31,7 @@ const loginFunction = async () => {
     } catch (error) {
         console.log(error)
     }
-    if (store.state.user.uid) router.replace('/user')
+    if (store.state.user?.uid) router.push('/user')
 }
 
 const loginWithGoogle = async () => {

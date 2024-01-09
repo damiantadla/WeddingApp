@@ -10,16 +10,7 @@ import {
     updateProfile,
     sendEmailVerification,
 } from 'firebase/auth'
-import { auth, db } from '../firebase'
-import {
-    collection,
-    setDoc,
-    getDoc,
-    getDocs,
-    addDoc,
-    doc,
-    updateDoc,
-} from 'firebase/firestore'
+import { auth } from '../firebase'
 import { show } from './showInfoUtils'
 import { useCookies } from 'vue3-cookies'
 
@@ -27,25 +18,7 @@ const { cookies } = useCookies()
 
 export default {
     actions: {
-        async update(
-            { rootState },
-            { partnerWedding, placeWedding, dateWedding, imgURL },
-        ) {
-            const userDataRef = doc(db, 'users', rootState.user.uid)
-            try {
-                await updateDoc(userDataRef, {
-                    partnerWedding,
-                    placeWedding,
-                    dateWedding,
-                    imgURL,
-                })
-                show.success('Updated data')
-            } catch (error) {
-                show.error(error.message)
-                console.log(error.message)
-            }
-        },
-        async signup({ commit }, { email, password, name, surname, number }) {
+        async signup({ dispatch }, { email, password, name, surname, number }) {
             if (!name || !surname) {
                 show.error('Please provide more information')
                 return
@@ -64,19 +37,22 @@ export default {
                 })
                 await sendEmailVerification(auth.currentUser)
 
-                const usersCollection = collection(db, 'users')
-                const userCollectionRef = doc(usersCollection, user.uid)
-
-                await setDoc(userCollectionRef, {
-                    name,
-                    surname,
-                    email,
-                    number,
+                await dispatch('createDoc', {
+                    data: {
+                        name,
+                        surname,
+                        email,
+                        number,
+                        id: user.uid,
+                    },
+                    path: `users`,
+                    id: user.uid,
                 })
 
                 show.success('Registered, activation link sent to e-mail.')
             } catch (error) {
                 show.error(error.code)
+                console.log(error)
             }
         },
         async login({ commit, dispatch }, { email, password }) {
@@ -87,7 +63,6 @@ export default {
                     password,
                 )
                 const user = res.user
-                commit('setUser', user, '123')
                 if (user.emailVerified) {
                     const data = await dispatch('getDoc', {
                         collectionID: 'users',
