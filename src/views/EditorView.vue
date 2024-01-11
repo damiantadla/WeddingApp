@@ -1,19 +1,22 @@
 <script setup>
 import 'quill/dist/quill.snow.css'
-import { ref, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
-import TitleComponent from './TitleComponent.vue'
-import ButtonComponent from './ButtonComponent.vue'
-import InputComponent from './InputComponent.vue'
+import TitleComponent from '@/components/TitleComponent.vue'
+import ButtonComponent from '@/components/ButtonComponent.vue'
+import InputComponent from '@/components/InputComponent.vue'
 import { toast } from 'vue3-toastify'
 
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import router from '@/router'
 
 const store = useStore()
+const router = useRouter()
 
 const content = ref('')
 const title = ref('')
+const date = ref('')
+
 let contentDiv = ref()
 let quillEditorRef = ref(null)
 
@@ -47,6 +50,11 @@ const editorOptions = {
 }
 const emit = defineEmits()
 
+console.log('tak')
+const dateInfo = new Date()
+const toDay = `${dateInfo.getFullYear()}-${dateInfo.getMonth()}-${dateInfo.getDate()}`
+console.log(toDay)
+
 const sendNote = async () => {
     try {
         if (title.value && content.value) {
@@ -54,13 +62,16 @@ const sendNote = async () => {
                 data: {
                     title: title.value,
                     text: content.value,
+                    date: `${dateInfo.getFullYear()}-${
+                        dateInfo.getMonth() + 1
+                    }-${dateInfo.getDate()}`,
                 },
                 path: `users/${store.getters.getData.id}/notes`,
             })
             emit('sendData', { title: title.value, text: content.value })
             title.value = ''
             content.value = ''
-
+            router.go(-1)
             toast.success('The note has been sent')
         } else {
             toast.error('Please provide more information')
@@ -69,19 +80,12 @@ const sendNote = async () => {
         console.log(error)
     }
 }
+const goToBack = () => {
+    router.go(-1)
+}
 </script>
 <template>
     <div class="px-8 min-h-screen flex flex-col">
-        <TitleComponent text="Note" class="mt-5 ml-5 mb-2" />
-        <div
-            class="min-h-[200px] max-h-[200px] ql-editor ql-container l-syntax ql-snow ql-blank overflow-hidden"
-            style="max-width: 100%"
-        >
-            <div class="pb-2 mb-2 text-base text-white border-b-[2px]">
-                <p>{{ title === '' ? 'Title' : title }}</p>
-            </div>
-            <p style="white-space: normal; word-break: break-word" ref="contentDiv"></p>
-        </div>
         <TitleComponent text="Editor" class="mt-5 ml-5 mb-4" />
         <input
             v-model="title"
@@ -89,8 +93,7 @@ const sendNote = async () => {
             placeholder="Title"
             class="w-full text-base text-white bg-transparent placeholder-white border-[2px] py-2 px-3 rounded-xl"
         />
-        <input v-model="content" class="text-black" />
-        <input v-model="contentDiv" class="text-black" />
+
         <quill-editor
             placeholder="Add some text..."
             theme="snow"
@@ -110,4 +113,29 @@ const sendNote = async () => {
             class="mt-4 ml-auto"
         />
     </div>
+    <font-awesome-icon
+        @click="goToBack"
+        class="fixed bottom-0 left-0 p-4 text-white text-6xl cursor-pointer"
+        :icon="['fas', 'circle-left']"
+    />
 </template>
+<style>
+.scroll-container::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 10px;
+}
+
+/* Firefox */
+.scroll-container {
+    scrollbar-width: thin;
+}
+
+.scroll-container::-moz-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 10px;
+}
+</style>

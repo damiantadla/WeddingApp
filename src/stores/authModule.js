@@ -25,11 +25,7 @@ export default {
             }
 
             try {
-                const res = await createUserWithEmailAndPassword(
-                    auth,
-                    email,
-                    password,
-                )
+                const res = await createUserWithEmailAndPassword(auth, email, password)
                 const user = res.user
 
                 await updateProfile(user, {
@@ -57,11 +53,7 @@ export default {
         },
         async login({ commit, dispatch }, { email, password }) {
             try {
-                const res = await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password,
-                )
+                const res = await signInWithEmailAndPassword(auth, email, password)
                 const user = res.user
                 if (user.emailVerified) {
                     const data = await dispatch('getDoc', {

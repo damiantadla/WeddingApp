@@ -6,6 +6,8 @@ import RecoverPasswordView from '@/views/RecoverPasswordView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import NotesView from '@/views/NotesView.vue'
 import EditUserView from '@/views/EditUserView.vue'
+import EditorView from '@/views/EditorView.vue'
+import InspirationsView from '@/views/InspirationsView.vue'
 import Page404View from '@/views/Page404View.vue'
 
 const router = createRouter({
@@ -36,6 +38,16 @@ const router = createRouter({
             path: '/user/notes',
             name: 'NotesView',
             component: NotesView,
+        },
+        {
+            path: '/user/notes/edit',
+            name: 'EditorView',
+            component: EditorView,
+        },
+        {
+            path: '/user/inspirations',
+            name: 'InspirationsView',
+            component: InspirationsView,
         },
         {
             path: '/user/edit',

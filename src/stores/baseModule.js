@@ -1,4 +1,13 @@
-import { collection, setDoc, getDoc, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore'
+import {
+    collection,
+    setDoc,
+    getDoc,
+    getDocs,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+} from 'firebase/firestore'
 import { show } from './showInfoUtils'
 import { db, storage } from '../firebase'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
@@ -53,7 +62,14 @@ export default {
                 await commit('updateData', data)
                 return url
             } catch (error) {
-                show.error(error.code)
+                show.error(error.message)
+            }
+        },
+        async deleteDoc(context, { path, id }) {
+            try {
+                await deleteDoc(doc(db, path, id))
+            } catch (error) {
+                show.error(error.message)
             }
         },
     },

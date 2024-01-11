@@ -7,11 +7,7 @@ import { toast } from 'vue3-toastify'
 
 import IconComponent from '@/components/IconComponent.vue'
 import { storage } from './firebase'
-import {
-    ref as storageRef,
-    getDownloadURL,
-    uploadBytes,
-} from 'firebase/storage'
+import { ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'
 
 const store = useStore()
 const { cookies } = useCookies()
@@ -32,5 +28,6 @@ onBeforeMount(() => {
 
 <template>
     <IconComponent class="pt-20" />
+
     <RouterView />
 </template>

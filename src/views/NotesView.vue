@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, onBeforeMount, reactive } from 'vue'
-import EditorComponent from '@/components/EditorComponent.vue'
+import { ref, onMounted, onBeforeMount, reactive, computed } from 'vue'
 import TitleComponent from '@/components/TitleComponent.vue'
 import IconComponent from '@/components/IconComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
+import LoadingComponent from '@/components/LoadingComponent.vue'
 
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
@@ -29,75 +29,123 @@ const matchingItems = ref([])
 const addDataFromEditor = (value) => {
     data.value.unshift(value)
 }
+const loading = ref(true)
 
 onBeforeMount(async () => {
-    const res = await store.dispatch('getDocs', {
-        path: `users/${store.getters.id}/notes`,
-    })
-    matchingItems.value = res.docs.map((doc) => {
-        return {
-            id: doc.id,
-            ...doc.data(),
-        }
-    })
+    try {
+        loading.value = true
+        const res = await store.dispatch('getDocs', {
+            path: `users/${store.getters.id}/notes`,
+        })
+        matchingItems.value = res.docs.map((doc) => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            }
+        })
+    } finally {
+        loading.value = false
+    }
     data.value = matchingItems.value
 })
 
-let saveEvent
-const search = (event) => {
-    let checkArray = []
-    if (saveEvent !== event.target.value) {
-        checkArray = []
+const computedList = computed(() => {
+    return data.value.filter((item) =>
+        item.title.toLowerCase().includes(searchTitle.value.toLowerCase()),
+    )
+})
+
+const isVisible = ref(false)
+
+const toggleEdit = (itemID) => {
+    isVisible.value = isVisible.value === itemID ? null : itemID
+}
+
+const deleteDoc = async (itemID) => {
+    try {
+        await store.dispatch('deleteDoc', {
+            path: `users/${store.getters.id}/notes`,
+            id: itemID,
+        })
+    } catch (error) {
+        console.log(error.message)
     }
-    data.value.forEach((element) => {
-        if (element.title.toLowerCase().includes(event.target.value.toLowerCase()))
-            checkArray.push(element)
-    })
-    matchingItems.value = checkArray
-    saveEvent = event.target.value
+    data.value = data.value.filter((obj) => obj.id !== itemID)
+}
+
+const goToEditor = () => {
+    router.push('notes/edit')
 }
 </script>
 <template>
-    <TitleComponent v-if="!visibleEditor" text="Notes" class="text-center mt-10" />
-    <InputComponent
-        placeholder="Search by title"
-        class="m-auto"
-        @input="search"
-        v-model="searchTitle"
-    />
+    <LoadingComponent v-if="loading" />
+    <TitleComponent v-if="!visibleEditor" text="Notes" class="text-center text-4xl mt-10" />
+    <InputComponent placeholder="Search by title" class="m-auto" v-model="searchTitle" />
 
-    <ul class="p-8 text-xl flex flex-col items-center justify-center">
-        <li
-            v-for="item in matchingItems"
-            :key="item.id"
-            class="border-[2px] w-80 p-4 my-4 rounded-xl overflow-hidden whitespace-normal break-all"
-        >
-            <p>Title: {{ item.title }}</p>
-            <span v-html="item.text"></span>
+    <ul class="p-8 text-white flex flex-col items-center justify-center">
+        <li v-for="item in computedList" :key="item.id" class="border-2 w-80 my-4 rounded-lg">
+            <div>
+                <div class="relative flex flex-col h-[250px] border-b-2">
+                    <div class="flex justify-between p-4">
+                        <p class="text-2xl">{{ item.title }}</p>
+
+                        <font-awesome-icon
+                            @click="toggleEdit(item.id)"
+                            :icon="['fas', 'pen-to-square']"
+                            class="text-3xl"
+                        />
+                    </div>
+
+                    <perfect-scrollbar class="px-4">
+                        <p class="whitespace-normal" v-html="item.text"></p>
+                    </perfect-scrollbar>
+
+                    <div class="absolute w-full bottom-0 w-100 bg-red bg-opacity-90">
+                        <transition name="slide-fade">
+                            <div
+                                v-if="isVisible === item.id"
+                                class="flex justify-end items-center p-2 pr-4 text-right"
+                            >
+                                <p class="pr-2 item-center text-base">Created on {{ item.date }}</p>
+                                <font-awesome-icon
+                                    @click="deleteDoc(item.id)"
+                                    :icon="['fas', 'circle-xmark']"
+                                    class="text-4xl"
+                                />
+                            </div>
+                        </transition>
+                    </div>
+                </div>
+            </div>
         </li>
     </ul>
+
     <div>
         <font-awesome-icon
             @click="goToBack"
-            class="fixed bottom-10 pl-8 text-white text-6xl cursor-pointer"
+            class="fixed bottom-0 left-0 p-4 text-white text-6xl cursor-pointer"
             :icon="['fas', 'circle-left']"
         />
         <font-awesome-icon
-            @click="showTextEditor"
-            class="fixed bottom-10 right-10 text-red text-7xl cursor-pointer"
+            @click="goToEditor"
+            class="fixed bottom-0 right-0 p-4 text-red text-6xl cursor-pointer"
             :icon="['fas', 'circle-plus']"
         />
     </div>
-    <div class="absolute top-0">
-        <div v-if="visibleEditor" class="bg-blackGrey">
-            <div class="flex pt-8 pl-8"><IconComponent /></div>
-
-            <EditorComponent @sendData="addDataFromEditor" class="" />
-            <font-awesome-icon
-                @click="showTextEditor"
-                class="fixed bottom-10 pl-8 text-white text-6xl cursor-pointer"
-                :icon="['fas', 'circle-left']"
-            />
-        </div>
-    </div>
+    <div class="h-[40px]"></div>
 </template>
+<style scoped>
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+}
+</style>

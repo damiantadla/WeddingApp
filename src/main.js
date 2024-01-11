@@ -36,6 +36,9 @@ import { createVuetify } from 'vuetify'
 import * as directives from 'vuetify/directives'
 import * as components from 'vuetify/components'
 
+import PerfectScrollbar from 'vue3-perfect-scrollbar'
+import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
+
 const vuetify = createVuetify({
     components,
     directives,
@@ -51,5 +54,6 @@ app.use(Vue3Toastify, {
     position: 'top-center',
 })
 app.use(vuetify)
+app.use(PerfectScrollbar)
 
 app.mount('#app')

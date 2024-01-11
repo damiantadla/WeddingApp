@@ -14,9 +14,12 @@ import { toast } from 'vue3-toastify'
 const router = useRouter()
 const store = useStore()
 
-const data = reactive({
+const userData = reactive({
     ...store.getters.getData,
 })
+
+const partner = ref(null)
+const place = ref(null)
 
 const imgFile = ref(null)
 
@@ -40,20 +43,24 @@ const handleFileChange = (e) => {
         imgFile.value = e.target.files[0]
         const reader = new FileReader()
 
-        reader.onload = (e) => (data.imgURL = e.target.result)
+        reader.onload = (e) => (userData.imgURL = e.target.result)
 
         reader.readAsDataURL(e.target.files[0])
     }
 }
 const loading = ref(false)
-
 const updateData = async () => {
-    if (checkObjects(data, store.getters.getData)) {
+    if (checkObjects(userData, store.getters.getData)) {
         try {
             loading.value = true
             await store.dispatch('upoladFileAndGetURLFile', {
                 imageFile: imgFile.value,
-                data,
+                data: {
+                    imgURL: userData.imgURL,
+                    partnerWedding: partner.value,
+                    placeWedding: place.value,
+                    dateWedding: userData.dateWedding,
+                },
             })
         } finally {
             loading.value = false
@@ -66,37 +73,33 @@ const updateData = async () => {
 </script>
 <template>
     <LoadingComponent v-if="loading" />
-    <div
-        class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto"
-    >
-        <div
-            class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto"
-        >
+    <div class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto">
+        <div class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto">
             <div class="flex flex-col justify-center items-center mt-10">
                 <TitleComponent text="Update your data" />
             </div>
             <div class="flex flex-col justify-center items-center mt-4">
                 <InputComponent
-                    v-model="data.partnerWedding"
+                    v-model="partner"
                     icon="fa-user-group"
-                    placeholder="Your partner"
+                    :placeholder="userData.partnerWedding"
                 />
                 <InputComponent
-                    v-model="data.placeWedding"
+                    v-model="place"
                     icon="fa-location-dot"
-                    placeholder="Wedding place"
+                    :placeholder="userData.placeWedding"
                 />
                 <TitleComponent text="Wedding date" class="pt-8" />
                 <InputComponent
                     class="text-red-500 placeholder-red-500"
-                    v-model="data.dateWedding"
+                    v-model="userData.dateWedding"
                     type="date"
                 />
                 <TitleComponent text="Your photo" class="pt-8" />
             </div>
-            <div v-if="data.imgURL" class="flex flex-col items-center my-8">
+            <div v-if="userData.imgURL" class="flex flex-col items-center my-8">
                 <img
-                    :src="data.imgURL"
+                    :src="userData.imgURL"
                     alt="Your img"
                     class="w-[100px] h-[100px] object-cover rounded-full"
                 />

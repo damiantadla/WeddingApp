@@ -18,7 +18,9 @@
         "@fortawesome/free-solid-svg-icons": "^6.5.1",
         "@fortawesome/vue-fontawesome": "^3.0.5",
         "@vueup/vue-quill": "^1.2.0",
+        "@vueuse/motion": "^2.0.0",
         "firebase": "^10.7.1",
+        "gsap": "^3.12.4",
         "pinia": "^2.1.7",
         "postcss-cli": "^11.0.0",
         "quill-delta-to-html": "^0.12.1",
@@ -26,6 +28,7 @@
         "vue": "^3.3.11",
         "vue-router": "^4.2.5",
         "vue3-cookies": "^1.0.6",
+        "vue3-perfect-scrollbar": "^1.6.1",
         "vue3-toastify": "^0.2.1",
         "vuetify": "^3.4.9",
         "vuex": "^4.0.2"
