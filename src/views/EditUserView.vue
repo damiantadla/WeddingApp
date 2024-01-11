@@ -106,6 +106,7 @@ const updateData = async () => {
                 <input
                     class="text-lg relative w-80 rounded-lg p-3"
                     type="file"
+                    accept="image/*"
                     @change="handleFileChange"
                 />
             </div>

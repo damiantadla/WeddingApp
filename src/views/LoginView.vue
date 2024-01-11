@@ -4,6 +4,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useCookies } from 'vue3-cookies'
 
+import IconComponent from '@/components/IconComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import ParafComponent from '@/components/ParafComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
@@ -57,32 +58,25 @@ const componentsVisible = reactive({
 
 const showComponents = (component) => {
     for (const key in componentsVisible) {
-        key === component
-            ? (componentsVisible[key] = true)
-            : (componentsVisible[key] = false)
+        key === component ? (componentsVisible[key] = true) : (componentsVisible[key] = false)
     }
 }
 </script>
 
 <template>
-    <RegisterView
-        v-if="componentsVisible.register"
-        @clickBack="showComponents('login')"
-    />
-    <RecoverPasswordView
-        v-if="componentsVisible.recovery"
-        @clickBack="showComponents('login')"
-    />
+    <RegisterView v-if="componentsVisible.register" @clickBack="showComponents('login')" />
+    <RecoverPasswordView v-if="componentsVisible.recovery" @clickBack="showComponents('login')" />
     <div
         v-if="componentsVisible.login"
         class="max-w-sm flex flex-col justify-center items-center mx-auto my-auto"
     >
-        <div class="max-w-sm flex flex-col justify-center pt-8">
+        <IconComponent class="mt-8" />
+        <div class="max-w-sm flex flex-col justify-cente">
             <div class="flex flex-col justify-center items-center mt-10">
                 <TitleComponent text="Hello!" />
                 <TitleComponent text="Welcome Back" />
             </div>
-            <div class="flex flex-col justify-center items-center mt-4">
+            <div class="flex flex-col justify-center items-center mt-6">
                 <InputComponent
                     v-model="email"
                     @keyup.enter="loginFunction"

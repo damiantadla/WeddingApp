@@ -9,6 +9,7 @@ import InputComponent from '@/components/InputComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import TitleComponent from '@/components/TitleComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import IconComponent from '@/components/IconComponent.vue'
 import ParafComponent from '@/components/ParafComponent.vue'
 
 import { toast } from 'vue3-toastify'
@@ -98,6 +99,9 @@ const updateData = async () => {
 
 <template>
     <LoadingComponent v-if="loading" />
+    <div class="flex justify-between">
+        <IconComponent class="pt-6 pl-6" />
+    </div>
 
     <MenuView class="absolute z-30" v-if="visibleMenu" @clickBack="showMenu" />
     <font-awesome-icon
@@ -137,6 +141,7 @@ const updateData = async () => {
             <input
                 class="text-lg relative w-80 rounded-lg pt-8"
                 type="file"
+                accept="image/*"
                 @change="handleFileChange"
             />
             <ButtonComponent text="Update" @click="updateData()" class="mt-10" />

@@ -27,7 +27,5 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <IconComponent class="pt-20" />
-
     <RouterView />
 </template>

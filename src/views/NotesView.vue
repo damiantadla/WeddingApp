@@ -134,13 +134,13 @@ const goToEditor = () => {
     </div>
     <div class="h-[40px]"></div>
 </template>
-<style scoped>
+<style>
 .slide-fade-enter-active {
-    transition: all 0.3s ease-out;
+    transition: all 0.2s ease-out;
 }
 
 .slide-fade-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from,
