@@ -16,21 +16,11 @@ const logout = async () => {
     router.replace('/')
 }
 
-const {
-    name,
-    number,
-    email,
-    surname,
-    placeWedding,
-    partnerWedding,
-    dateWedding,
-} = store.state.data
+const { name, number, email, surname, placeWedding, partnerWedding, dateWedding } = store.state.data
 </script>
 
 <template>
-    <div
-        class="top-0 right-0 flex flex-col bg-blackGrey min-h-screen w-screen md:w-80"
-    >
+    <div class="top-0 right-0 flex flex-col bg-blackGrey min-h-screen w-screen md:w-80">
         <div class="flex justify-between">
             <IconComponent class="pt-6 pl-6" />
             <font-awesome-icon
@@ -42,12 +32,10 @@ const {
 
         <TitleComponent class="pt-10 pb-5 text-4xl px-10" text="Menu" />
         <ul
-            class="flex flex-col justify-center items-start px-10 cursor-pointer py-4 text-2xl text-white"
+            class="flex flex-col justify-center items-start px-10 cursor-pointer py-4 text-3xl text-white"
         >
             <li class="w-full py-4">
-                <router-link
-                    class="flex justify-between items-center"
-                    :to="{ name: 'NotesView' }"
+                <router-link class="flex justify-between items-center" :to="{ name: 'NotesView' }"
                     >Notes
                     <font-awesome-icon :icon="['fas', 'angle-right']" />
                 </router-link>
@@ -55,7 +43,7 @@ const {
             <li class="w-full py-4">
                 <router-link
                     class="flex justify-between items-center"
-                    :to="{ name: 'NotesView' }"
+                    :to="{ name: 'InspirationsView' }"
                     >Inspiration
                     <font-awesome-icon :icon="['fas', 'angle-right']" />
                 </router-link>
@@ -73,9 +61,7 @@ const {
                 <font-awesome-icon :icon="['fas', 'angle-right']" />
             </li>
         </ul>
-        <div
-            class="flex justify-between items-center w-full pt-8 pb-5 text-2xl px-10"
-        >
+        <div class="flex justify-between items-center w-full pt-8 pb-5 text-2xl px-10">
             <TitleComponent class="" text="User" />
             <router-link
                 :to="{ name: 'EditUserView' }"
@@ -102,19 +88,13 @@ const {
             <p v-if="placeWedding">Weeding place: {{ placeWedding }}</p>
             <p v-if="partnerWedding">Partner: {{ partnerWedding }}</p>
         </div>
-        <div
-            @click="logout"
-            class="flex text-white text-3xl ml-auto pr-10 pt-5 ` cursor-pointer"
-        >
+        <div @click="logout" class="flex text-white text-3xl ml-auto pr-10 pt-5 ` cursor-pointer">
             <TitleComponent text="Logout" class="text-3xl" />
             <font-awesome-icon
                 class="pl-5 top-1/2 text-4xl"
                 :icon="['fas', 'right-from-bracket']"
             />
         </div>
-        <ParafComponent
-            text="Created by damiantadla@gmail.com"
-            class="text-center mt-20"
-        />
+        <ParafComponent text="Created by damiantadla@gmail.com" class="text-center mt-20" />
     </div>
 </template>
