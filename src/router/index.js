@@ -8,6 +8,9 @@ import NotesView from '@/views/NotesView.vue'
 import EditUserView from '@/views/EditUserView.vue'
 import EditorView from '@/views/EditorView.vue'
 import InspirationsView from '@/views/InspirationsView.vue'
+import PlannerView from '@/views/PlannerView.vue'
+import SongListView from '@/views/SongListView.vue'
+import GuestListView from '@/views/GuestListView.vue'
 import Page404View from '@/views/Page404View.vue'
 
 const router = createRouter({
@@ -53,6 +56,21 @@ const router = createRouter({
             path: '/user/edit',
             name: 'EditUserView',
             component: EditUserView,
+        },
+        {
+            path: '/user/planner',
+            name: 'PlannerView',
+            component: PlannerView,
+        },
+        {
+            path: '/user/guest-list',
+            name: 'GuestListView',
+            component: GuestListView,
+        },
+        {
+            path: '/user/song-list',
+            name: 'SongListView',
+            component: SongListView,
         },
         {
             path: '/:catchAll(.*)',
