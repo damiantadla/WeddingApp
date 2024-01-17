@@ -32,22 +32,22 @@ const loginFunction = async () => {
     } catch (error) {
         console.log(error)
     }
-    if (store.state.user?.uid) router.push('/user')
+    if (store.getters.id) router.push('/user')
 }
 
 const loginWithGoogle = async () => {
     await store.dispatch('loginWithGoogle')
-    router.replace({ name: 'UserView' })
+    router.push({ name: 'UserView' })
 }
 
 const loginWithFacebook = async () => {
     await store.dispatch('loginWithFacebook')
-    router.replace({ name: 'UserView' })
+    router.push({ name: 'UserView' })
 }
 
 const loginWithGitHub = async () => {
     await store.dispatch('loginWithGitHub')
-    router.replace({ name: 'UserView' })
+    router.push({ name: 'UserView' })
 }
 
 const componentsVisible = reactive({
@@ -58,19 +58,26 @@ const componentsVisible = reactive({
 
 const showComponents = (component) => {
     for (const key in componentsVisible) {
-        key === component ? (componentsVisible[key] = true) : (componentsVisible[key] = false)
+        key === component
+            ? (componentsVisible[key] = true)
+            : (componentsVisible[key] = false)
     }
 }
 </script>
 
 <template>
-    <RegisterView v-if="componentsVisible.register" @clickBack="showComponents('login')" />
-    <RecoverPasswordView v-if="componentsVisible.recovery" @clickBack="showComponents('login')" />
+    <RegisterView
+        v-if="componentsVisible.register"
+        @clickBack="showComponents('login')"
+    />
+    <RecoverPasswordView
+        v-if="componentsVisible.recovery"
+        @clickBack="showComponents('login')"
+    />
     <div
         v-if="componentsVisible.login"
         class="max-w-sm flex flex-col justify-center items-center mx-auto my-auto"
     >
-        <IconComponent class="mt-8" />
         <div class="max-w-sm flex flex-col justify-cente">
             <div class="flex flex-col justify-center items-center mt-10">
                 <TitleComponent text="Hello!" />

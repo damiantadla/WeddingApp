@@ -8,6 +8,7 @@ import InputComponent from '@/components/InputComponent.vue'
 import TitleComponent from '@/components/TitleComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import GoBackComponent from '@/components/GoBackComponent.vue'
 
 import { toast } from 'vue3-toastify'
 
@@ -20,61 +21,54 @@ const userData = reactive({
 
 const partner = ref(null)
 const place = ref(null)
+const dateWedding = ref(null)
+const imgURL = ref(null)
 
 const imgFile = ref(null)
-
-const checkObjects = (obj1, obj2) => {
-    const obj1Values = Object.values(obj1)
-    const obj2Values = Object.values(obj2)
-
-    for (const [index, value] of obj1Values.entries()) {
-        if (value !== obj2Values[index]) return true
-    }
-
-    return false
-}
-
-const goToBack = () => {
-    router.replace('/user')
-}
 
 const handleFileChange = (e) => {
     if (e.target.files[0]) {
         imgFile.value = e.target.files[0]
         const reader = new FileReader()
 
-        reader.onload = (e) => (userData.imgURL = e.target.result)
+        reader.onload = (e) => {
+            imgURL.value = e.target.result
+        }
 
         reader.readAsDataURL(e.target.files[0])
     }
 }
 const loading = ref(false)
+
 const updateData = async () => {
-    if (checkObjects(userData, store.getters.getData)) {
-        try {
-            loading.value = true
-            await store.dispatch('upoladFileAndGetURLFile', {
-                imageFile: imgFile.value,
-                data: {
-                    imgURL: userData.imgURL,
-                    partnerWedding: partner.value,
-                    placeWedding: place.value,
-                    dateWedding: userData.dateWedding,
-                },
-            })
-        } finally {
-            loading.value = false
-        }
-        goToBack()
-    } else {
-        toast.error('Please provide more information')
+    try {
+        loading.value = true
+
+        await store.dispatch('uploadFileAndGetURLFile', {
+            imageFile: imgFile.value,
+            data: {
+                imgURL: imgURL.value || userData.imgURL,
+                partnerWedding: partner.value || userData.partnerWedding,
+                placeWedding: place.value || userData.placeWedding,
+                dateWedding: dateWedding.value || userData.dateWedding,
+            },
+        })
+    } catch (error) {
+        console.log(error)
+    } finally {
+        loading.value = false
     }
+    router.back()
 }
 </script>
 <template>
     <LoadingComponent v-if="loading" />
-    <div class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto">
-        <div class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto">
+    <div
+        class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto"
+    >
+        <div
+            class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto"
+        >
             <div class="flex flex-col justify-center items-center mt-10">
                 <TitleComponent text="Update your data" />
             </div>
@@ -119,10 +113,6 @@ const updateData = async () => {
                 />
             </div>
         </div>
-        <font-awesome-icon
-            @click="goToBack"
-            class="my-10 pl-8 text-white text-6xl"
-            :icon="['fas', 'circle-left']"
-        />
+        <GoBackComponent @click="router.back()" />
     </div>
 </template>

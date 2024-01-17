@@ -13,14 +13,24 @@ const store = useStore()
 
 const logout = async () => {
     await store.dispatch('logout')
-    router.replace('/')
+    store.replace('/')
 }
 
-const { name, number, email, surname, placeWedding, partnerWedding, dateWedding } = store.state.data
+const {
+    name,
+    number,
+    email,
+    surname,
+    placeWedding,
+    partnerWedding,
+    dateWedding,
+} = store.state.data
 </script>
 
 <template>
-    <div class="top-0 right-0 flex flex-col bg-blackGrey min-h-screen w-screen md:w-80">
+    <div
+        class="top-0 right-0 flex flex-col bg-blackGrey min-h-screen w-screen md:w-80"
+    >
         <div class="flex justify-between">
             <IconComponent class="pt-6 pl-6" />
             <font-awesome-icon
@@ -32,43 +42,109 @@ const { name, number, email, surname, placeWedding, partnerWedding, dateWedding 
 
         <TitleComponent class="pt-10 pb-5 text-4xl px-10" text="Menu" />
         <ul
-            class="flex flex-col justify-center items-start px-10 cursor-pointer py-4 text-3xl text-white"
+            class="flex flex-col justify-center items-start px-10 cursor-pointer py-4 text-xl text-white"
         >
             <li class="w-full py-4">
-                <router-link class="flex justify-between items-center" :to="{ name: 'NotesView' }"
-                    >Notes
-                    <font-awesome-icon :icon="['fas', 'angle-right']" />
+                <router-link
+                    class="flex justify-between items-center"
+                    :to="{ name: 'InspirationsView' }"
+                >
+                    <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
+                        Guest List
+                    </p>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
+                        <font-awesome-icon
+                            :icon="['fas', 'angle-right']"
+                            class=""
+                        />
+                    </div>
                 </router-link>
             </li>
             <li class="w-full py-4">
                 <router-link
                     class="flex justify-between items-center"
                     :to="{ name: 'InspirationsView' }"
-                    >Inspiration
-                    <font-awesome-icon :icon="['fas', 'angle-right']" />
+                >
+                    <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
+                        Inspiration
+                    </p>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
+                        <font-awesome-icon
+                            :icon="['fas', 'angle-right']"
+                            class=""
+                        />
+                    </div>
                 </router-link>
             </li>
-            <li class="flex justify-between items-center w-full py-4">
-                <p>ToDo list</p>
-                <font-awesome-icon :icon="['fas', 'angle-right']" />
+            <li class="w-full py-4">
+                <router-link
+                    class="flex justify-between items-center"
+                    :to="{ name: 'NotesView' }"
+                >
+                    <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
+                        Notes
+                    </p>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
+                        <font-awesome-icon
+                            :icon="['fas', 'angle-right']"
+                            class=""
+                        />
+                    </div>
+                </router-link>
             </li>
-            <li class="flex justify-between items-center w-full py-4">
-                <p>Song list</p>
-                <font-awesome-icon :icon="['fas', 'angle-right']" />
+            <li class="w-full py-4">
+                <router-link
+                    class="flex justify-between items-center"
+                    :to="{ name: 'InspirationsView' }"
+                >
+                    <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
+                        ToDo list
+                    </p>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
+                        <font-awesome-icon
+                            :icon="['fas', 'angle-right']"
+                            class=""
+                        />
+                    </div>
+                </router-link>
             </li>
-            <li class="flex justify-between items-center w-full py-4">
-                <p>Guest list</p>
-                <font-awesome-icon :icon="['fas', 'angle-right']" />
+            <li class="w-full py-4">
+                <router-link
+                    class="flex justify-between items-center"
+                    :to="{ name: 'InspirationsView' }"
+                >
+                    <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
+                        Song list
+                    </p>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
+                        <font-awesome-icon
+                            :icon="['fas', 'angle-right']"
+                            class=""
+                        />
+                    </div>
+                </router-link>
             </li>
         </ul>
-        <div class="flex justify-between items-center w-full pt-8 pb-5 text-2xl px-10">
-            <TitleComponent class="" text="User" />
+        <div
+            @click="logout"
+            class="flex text-white text-3xl ml-auto px-4 py-2 cursor-pointer bg-white bg-opacity-10 rounded-xl mr-10"
+        >
+            <TitleComponent text="Logout" class="text-2xl" />
+            <font-awesome-icon
+                class="pl-5 text-3xl"
+                :icon="['fas', 'right-from-bracket']"
+            />
+        </div>
+        <div class="flex cursor-pointer ml-10 mt-6 mb-5">
             <router-link
                 :to="{ name: 'EditUserView' }"
-                class="flex flex-col text-white cursor-pointer"
+                class="flex text-white cursor-pointer bg-white bg-opacity-10 rounded-xl px-4 py-2"
             >
-                <font-awesome-icon class="px-2" :icon="['fas', 'user-pen']" />
-                <p>Edit</p>
+                <TitleComponent text="User" />
+                <font-awesome-icon
+                    :icon="['fas', 'pen-to-square']"
+                    class="text-3xl pl-4"
+                />
             </router-link>
         </div>
         <div class="px-10">
@@ -88,13 +164,10 @@ const { name, number, email, surname, placeWedding, partnerWedding, dateWedding 
             <p v-if="placeWedding">Weeding place: {{ placeWedding }}</p>
             <p v-if="partnerWedding">Partner: {{ partnerWedding }}</p>
         </div>
-        <div @click="logout" class="flex text-white text-3xl ml-auto pr-10 pt-5 ` cursor-pointer">
-            <TitleComponent text="Logout" class="text-3xl" />
-            <font-awesome-icon
-                class="pl-5 top-1/2 text-4xl"
-                :icon="['fas', 'right-from-bracket']"
-            />
-        </div>
-        <ParafComponent text="Created by damiantadla@gmail.com" class="text-center mt-20" />
+
+        <ParafComponent
+            text="Created by damiantadla@gmail.com"
+            class="text-center mt-10 mb-4"
+        />
     </div>
 </template>

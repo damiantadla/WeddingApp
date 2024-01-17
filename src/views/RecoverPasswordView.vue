@@ -5,6 +5,8 @@ import { ref } from 'vue'
 import TitleComponent from '@/components/TitleComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
+import HeartComponent from '@/components/HeartComponent.vue'
+import GoBackComponent from '@/components/GoBackComponent.vue'
 
 const store = useStore()
 const emit = defineEmits()
@@ -35,24 +37,14 @@ const sendEmail = async () => {
                 placeholder="Email"
                 icon="fa-envelope"
             />
-            <div class="flex flex-row justify-center m-auto items-center mt-4">
-                <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
-                <font-awesome-icon
-                    class="text-red text-2xl px-5"
-                    :icon="['fas', 'heart']"
-                />
-                <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
-            </div>
+            <HeartComponent />
             <ButtonComponent
                 @click="sendEmail"
-                class="w-80 mt-5"
+                class="w-80"
                 text="Send email"
             />
         </div>
-        <font-awesome-icon
-            @click="emitClickBack"
-            class="mt-20 pl-8 text-white text-6xl"
-            :icon="['fas', 'circle-left']"
-        />
+
+        <GoBackComponent @click="emitClickBack" />
     </div>
 </template>

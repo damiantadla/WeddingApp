@@ -7,6 +7,8 @@ import TitleComponent from '@/components/TitleComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import HeartComponent from '@/components/HeartComponent.vue'
+import GoBackComponent from '@/components/GoBackComponent.vue'
 
 const emit = defineEmits(['clickBack'])
 
@@ -95,21 +97,14 @@ const registerFunction = async () => {
                     type="number"
                     placeholder="Phone Number"
                 />
-                <div class="flex flex-row justify-center items-center mt-4">
-                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
-                    <font-awesome-icon
-                        class="text-red text-2xl px-5"
-                        :icon="['fas', 'heart']"
-                    />
-                    <div class="w-[80px] h-[1.5px] bg-gray-400"></div>
-                </div>
+                <HeartComponent />
             </div>
 
             <div class="flex flex-row justify-center">
                 <ButtonComponent
                     @click="registerFunction"
                     text="Register"
-                    class="w-80 flex justify-center mt-5 font-bold"
+                    class="w-80 flex justify-center font-bold"
                 />
             </div>
             <p class="w-80 text-center mt-5">
@@ -117,10 +112,6 @@ const registerFunction = async () => {
                 <u>Terms and Conditions</u> and <u>Privacy Statement</u>
             </p>
         </div>
-        <font-awesome-icon
-            @click="emitClickBack"
-            class="pl-8 py-8 text-white text-6xl"
-            :icon="['fas', 'circle-left']"
-        />
+        <GoBackComponent @click="emitClickBack" />
     </div>
 </template>

@@ -1,34 +1,16 @@
-<template>
-    <div>
-        <h2 class="pb-5">Inspiracje</h2>
-        <div v-for="(category, index) in categories" :key="index">
-            <h3 @click="toggleCategory(index)">{{ category.name }}</h3>
-            <ul v-if="category.visible">
-                <li v-for="(item, itemIndex) in category.items" :key="itemIndex">{{ item }}</li>
-            </ul>
-        </div>
-    </div>
-</template>
+<script setup>
+import { useRouter } from 'vue-router'
 
-<script>
-export default {
-    data() {
-        return {
-            categories: [
-                { name: 'Kategoria 1', visible: false, items: ['Inspiracja 1', 'Inspiracja 2'] },
-                { name: 'Kategoria 2', visible: false, items: ['Inspiracja 3', 'Inspiracja 4'] },
-                // Dodaj więcej kategorii według potrzeb
-            ],
-        }
-    },
-    methods: {
-        toggleCategory(index) {
-            this.categories[index].visible = !this.categories[index].visible
-        },
-    },
-}
+import HeartComponent from '@/components/HeartComponent.vue'
+import GoBackComponent from '@/components/GoBackComponent.vue'
+import TitleComponent from '@/components/TitleComponent.vue'
+
+const router = useRouter()
 </script>
-
-<style scoped>
-/* Dodaj stylizację według potrzeb */
-</style>
+<template>
+    <TitleComponent text="Page 404" class="text-center mt-10 text-6xl" />
+    <img src="../assets/404.svg" alt="Image404" class="mt-8" />
+    <TitleComponent text="Not Found" class="text-center mt" />
+    <HeartComponent />
+    <GoBackComponent @click="router.back()" />
+</template>
