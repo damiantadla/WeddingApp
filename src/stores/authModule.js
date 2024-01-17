@@ -25,7 +25,11 @@ export default {
             }
 
             try {
-                const res = await createUserWithEmailAndPassword(auth, email, password)
+                const res = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password,
+                )
                 const user = res.user
 
                 await updateProfile(user, {
@@ -48,12 +52,15 @@ export default {
                 show.success('Registered, activation link sent to e-mail.')
             } catch (error) {
                 show.error(error.code)
-                console.log(error)
             }
         },
         async login({ commit, dispatch }, { email, password }) {
             try {
-                const res = await signInWithEmailAndPassword(auth, email, password)
+                const res = await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password,
+                )
                 const user = res.user
                 if (user.emailVerified) {
                     const data = await dispatch('getDoc', {

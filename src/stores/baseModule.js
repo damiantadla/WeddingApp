@@ -1,16 +1,22 @@
 import {
+    addDoc,
     collection,
-    setDoc,
+    deleteDoc,
+    doc,
     getDoc,
     getDocs,
-    addDoc,
-    doc,
+    setDoc,
     updateDoc,
-    deleteDoc,
 } from 'firebase/firestore'
 import { show } from './showInfoUtils'
 import { db, storage } from '../firebase'
-import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
+import {
+    getDownloadURL,
+    ref,
+    uploadBytes,
+    deleteObject,
+} from 'firebase/storage'
+import { v4 as setRandomIDv4 } from 'uuid'
 
 export default {
     actions: {
@@ -30,8 +36,7 @@ export default {
         async getDoc(context, { collectionID, docID }) {
             const docRef = doc(db, collectionID, docID)
             const docSnap = await getDoc(docRef)
-            const data = docSnap.data()
-            return data
+            return docSnap.data()
         },
 
         async getDocs(context, { path }) {
@@ -39,24 +44,44 @@ export default {
             return querySnapshot
         },
 
-        async updateDoc({ rootState }, { partnerWedding, placeWedding, dateWedding, imgURL }) {
+        async updateDoc({ rootState }, data) {
             const userDataRef = doc(db, 'users', rootState.user.uid)
             try {
                 await updateDoc(userDataRef, {
-                    partnerWedding,
-                    placeWedding,
-                    dateWedding,
-                    imgURL,
+                    ...data,
                 })
                 show.success('Updated data')
             } catch (error) {
                 show.error(error.message)
             }
         },
-        async upoladFileAndGetURLFile({ commit, dispatch }, { imageFile, data }) {
-            const imgRef = ref(storage, `${this.state.user.uid}/logo`)
+        async uploadFileAndGetURL({ dispatch }, { imageFile }) {
+            const randomId = setRandomIDv4()
+            const imgRef = ref(
+                storage,
+                `${this.state.user.uid}/inspirations/${randomId}`,
+            )
+            const metadata = {
+                contentType: 'image/jpeg',
+            }
             try {
-                await uploadBytes(imgRef, imageFile)
+                await uploadBytes(imgRef, imageFile, metadata)
+                const url = await getDownloadURL(imgRef)
+                return { randomId, url }
+            } catch (error) {
+                console.log(error.message)
+            }
+        },
+        async uploadFileAndGetURLFile(
+            { commit, dispatch },
+            { imageFile, data },
+        ) {
+            const imgRef = ref(storage, `${this.state.user.uid}/logo`)
+            const metadata = {
+                contentType: 'image/jpeg',
+            }
+            try {
+                await uploadBytes(imgRef, imageFile, metadata)
                 const url = await getDownloadURL(imgRef)
                 await dispatch('updateDoc', data)
                 await commit('updateData', data)
@@ -68,6 +93,14 @@ export default {
         async deleteDoc(context, { path, id }) {
             try {
                 await deleteDoc(doc(db, path, id))
+            } catch (error) {
+                show.error(error.message)
+            }
+        },
+        async deleteFile(context, { path }) {
+            try {
+                const desertRef = ref(storage, path)
+                await deleteObject(desertRef)
             } catch (error) {
                 show.error(error.message)
             }
