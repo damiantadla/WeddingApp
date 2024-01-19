@@ -9,6 +9,8 @@ import TitleComponent from '@/components/TitleComponent.vue'
 import IconComponent from '@/components/IconComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import AddButtonComponent from '@/components/AddButtonComponent.vue'
+import GoBackComponent from '@/components/GoBackComponent.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -136,16 +138,8 @@ const deleteDoc = async (itemID) => {
     </ul>
 
     <div>
-        <font-awesome-icon
-            @click="goBack"
-            class="fixed bottom-0 left-0 p-4 text-white text-6xl cursor-pointer"
-            :icon="['fas', 'circle-left']"
-        />
-        <font-awesome-icon
-            @click="router.push('notes/edit')"
-            class="fixed bottom-0 right-0 p-4 text-white text-6xl cursor-pointer"
-            :icon="['fas', 'circle-plus']"
-        />
+        <GoBackComponent @click="goBack" />
+        <AddButtonComponent @click="router.push('notes/edit')" />
     </div>
     <div class="h-[40px]"></div>
 </template>
