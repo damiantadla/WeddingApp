@@ -9,6 +9,7 @@ import TitleComponent from '@/components/TitleComponent.vue'
 import IconComponent from '@/components/IconComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import GoBackComponent from '@/components/GoBackComponent.vue'
+import AddButtonComponent from '@/components/AddButtonComponent.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -110,10 +111,7 @@ const sendImage = async () => {
             (item) => item.name === category.value,
         )
 
-        console.log(data.categories)
-        console.log(selectedCategory)
         if (selectedCategory) {
-            console.log(data.categories)
             selectedCategory.items.push({
                 url: dataReturn.url,
                 id: dataReturn.randomId,
@@ -121,7 +119,7 @@ const sendImage = async () => {
         }
         isVisible.value = false
     } catch (error) {
-        console.log(error)
+        toast.error(error)
     } finally {
         loading.value = false
     }
@@ -134,7 +132,6 @@ const showFullScreenImage = (id, url) => {
 }
 
 const removeItemInspiration = async () => {
-    console.log(setIdFullScreenImage.value)
     try {
         loading.value = true
         await store.dispatch('deleteFile', {
@@ -144,7 +141,6 @@ const removeItemInspiration = async () => {
             path: `users/${store.getters.id}/inspirations`,
             id: setIdFullScreenImage.value,
         })
-        console.log(data.categories)
         for (const item of data.categories) {
             item.items = item.items.filter(
                 (itemElement) => itemElement.id !== setIdFullScreenImage.value,
@@ -153,7 +149,7 @@ const removeItemInspiration = async () => {
         setIdFullScreenImage.value = ''
         closeFullScreenImage()
     } catch (error) {
-        console.log(error)
+        toast.error(error)
     } finally {
         loading.value = false
     }
@@ -176,7 +172,7 @@ const addFileToVariable = (event) => {
             v-for="(category, index) in data.categories"
             :key="index"
         >
-            <h3
+            <h1
                 class="flex justify-between items-center w-full h-10 px-4 text-xl font-bold bg-glacier bg-opacity-70 rounded-lg"
                 @click="
                     data.categories[index].visible =
@@ -191,7 +187,7 @@ const addFileToVariable = (event) => {
                             : ['fas', 'caret-up']
                     "
                 />
-            </h3>
+            </h1>
             <transition name="slide">
                 <ul v-if="category.visible">
                     <li v-for="item in category.items" :key="item.id">
@@ -202,11 +198,7 @@ const addFileToVariable = (event) => {
                             class="my-3 pt-4 px-4"
                         />
                     </li>
-                    <div
-                        v-if="category.items.length === 0"
-                        @click="console.log(category.items.length)"
-                        class="p-4"
-                    >
+                    <div v-if="category.items.length === 0" class="p-4">
                         <h1>Lack of inspiration</h1>
                     </div>
                 </ul>
@@ -249,11 +241,7 @@ const addFileToVariable = (event) => {
     </div>
     <div>
         <GoBackComponent @click="router.back" />
-        <font-awesome-icon
-            @click="isVisible = !isVisible"
-            class="fixed bottom-0 right-0 p-4 text-white text-6xl cursor-pointer"
-            :icon="['fas', 'circle-plus']"
-        />
+        <AddButtonComponent @click="isVisible = !isVisible" />
     </div>
     <div class="h-[40px]"></div>
     <transition name="slide-fade">
@@ -308,7 +296,7 @@ const addFileToVariable = (event) => {
         </div>
     </transition>
 </template>
-<style scoped>
+<style>
 input[type='file']::file-selector-button {
     background-color: #fff;
     border: none;
