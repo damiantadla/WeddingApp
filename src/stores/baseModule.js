@@ -40,12 +40,11 @@ export default {
         },
 
         async getDocs(context, { path }) {
-            const querySnapshot = await getDocs(collection(db, path))
-            return querySnapshot
+            return await getDocs(collection(db, path))
         },
 
-        async updateDoc({ rootState }, data) {
-            const userDataRef = doc(db, 'users', rootState.user.uid)
+        async updateDoc({ rootState }, { data, path }) {
+            const userDataRef = doc(db, path)
             try {
                 await updateDoc(userDataRef, {
                     ...data,
@@ -83,7 +82,10 @@ export default {
             try {
                 await uploadBytes(imgRef, imageFile, metadata)
                 const url = await getDownloadURL(imgRef)
-                await dispatch('updateDoc', data)
+                await dispatch('updateDoc', {
+                    data,
+                    path: `users/${this.state.user.uid}`,
+                })
                 await commit('updateData', data)
                 return url
             } catch (error) {
