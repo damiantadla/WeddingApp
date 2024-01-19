@@ -13,7 +13,7 @@ const store = useStore()
 
 const logout = async () => {
     await store.dispatch('logout')
-    store.replace('/')
+    router.push('/')
 }
 
 const {
@@ -47,7 +47,7 @@ const {
             <li class="w-full py-4">
                 <router-link
                     class="flex justify-between items-center"
-                    :to="{ name: 'InspirationsView' }"
+                    :to="{ name: 'GuestListView' }"
                 >
                     <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
                         Guest List
@@ -95,10 +95,10 @@ const {
             <li class="w-full py-4">
                 <router-link
                     class="flex justify-between items-center"
-                    :to="{ name: 'InspirationsView' }"
+                    :to="{ name: 'PlannerView' }"
                 >
                     <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
-                        ToDo list
+                        Planner
                     </p>
                     <div class="bg-white bg-opacity-20 p-4 rounded-r-xl">
                         <font-awesome-icon
@@ -111,7 +111,7 @@ const {
             <li class="w-full py-4">
                 <router-link
                     class="flex justify-between items-center"
-                    :to="{ name: 'InspirationsView' }"
+                    :to="{ name: 'SongListView' }"
                 >
                     <p class="w-80 bg-white bg-opacity-10 p-4 rounded-l-xl">
                         Song list
