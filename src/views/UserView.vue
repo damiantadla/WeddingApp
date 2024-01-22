@@ -92,6 +92,7 @@ const updateData = async () => {
             }
         } catch (error) {
             toast.error(error.message)
+            console.log(error)
         } finally {
             loading.value = false
         }
