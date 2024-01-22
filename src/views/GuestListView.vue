@@ -10,6 +10,7 @@ import SendComponent from '@/components/SendComponent.vue'
 import HeartComponent from '@/components/HeartComponent.vue'
 import ParafComponent from '@/components/ParafComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import { toast } from 'vue3-toastify'
 
@@ -148,6 +149,7 @@ const getGuests = async () => {
                   visible: false,
               })
     })
+    console.log(dataGroom.value)
 }
 
 const deleteGuest = async (id) => {
@@ -170,14 +172,83 @@ const updateGuest = async (id) => {
     })
 }
 
+import 'jspdf-autotable'
+import { jsPDF } from 'jspdf'
+const generatePDF = () => {
+    const fileName = `Wedding-List-${store.getters.getData.name}- ${store.getters.getData.partnerWedding}`
+    const dataPdf = {
+        heading: 'WEDDING GUEST LIST',
+        stats: [
+            `Number of invited guests: ${stats.totalGuests}`,
+            `Number of overnight stays: ${stats.totalOvernightStays}`,
+            `Number of invited children: ${stats.totalChildren}`,
+            `Number of guests on the Bride's side: ${stats.herGuests}`,
+            `Number of guests on the Groom's side: ${stats.hisGuests}`,
+        ],
+    }
+    const columns = [
+        { title: 'Guest', dataKey: 'guestName' },
+        { title: 'Partner', dataKey: 'partner' },
+        { title: 'Children', dataKey: 'children' },
+        { title: 'Overnight stays', dataKey: 'overnightStays' },
+        { title: 'Address', dataKey: 'address' },
+        { title: 'Phone number', dataKey: 'phoneNumber' },
+    ]
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'in',
+        format: 'letter',
+    })
+    // text is placed using x, y coordinates
+    doc.setFontSize(16).text(dataPdf.heading, 0.5, 1.0)
+    // create a line under heading
+    doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1)
+    // Using autoTable plugin
+    doc.setFontSize(12).text(dataPdf.stats, 0.5, 1.35, {
+        align: 'left',
+        maxWidth: '7.5',
+    })
+    doc.setFontSize(16).text("Groom's guests / Bride's guests", 0.5, 2.8)
+    doc.setLineWidth(0.01).line(0.5, 2.9, 8.0, 2.9)
+    // create a line under heading
+    doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1)
+
+    doc.autoTable({
+        columns,
+        body: dataGroom.value,
+        margin: { left: 0.5, top: 3.0 },
+    })
+
+    doc.autoTable({
+        columns,
+        body: dataBride.value,
+        margin: { left: 0.5, top: 1.25 },
+    })
+    //Create stats
+
+    //Create footer and save to file
+    doc.setFontSize(10)
+    doc.text(
+        'WeddingApp. Created by Damian Tadla. Contact: damiantadla@gmail.com',
+        0.5,
+        doc.internal.pageSize.height - 0.5,
+    ).save(`${fileName}.pdf`)
+}
+
 onBeforeMount(getGuests)
 </script>
 
 <template>
     <LoadingComponent v-if="isLoading" />
     <IconComponent class="mt-6" />
-    <TitleComponent text="Guest List" class="text-center text-4xl m-8" />
-    <TitleComponent text="Stats" class="ml-8" />
+    <div class="flex justify-center items-center flex-col">
+        <TitleComponent text="Guest List" class="text-center text-4xl m-8" />
+        <ButtonComponent
+            text="Generate the guest list"
+            class="text-center w-60"
+        />
+    </div>
+    <TitleComponent text="Stats" class="ml-8 mt-8" />
     <div class="mx-10 mt-4">
         <ParafComponent :text="'Total guests: ' + stats.totalGuests" />
         <ParafComponent :text="'His guests:' + stats.hisGuests" />
@@ -318,27 +389,114 @@ onBeforeMount(getGuests)
     </h1>
 
     <transition name="slide">
-        <ul
-            v-if="isVisibleHerGuestList"
-            class="flex flex-col justify-center items-center"
-        >
-            <li v-for="item in dataBride" :key="item.id">
-                <div
-                    class="flex justify-between items-center w-[290px] h-[60px] px-4 my-2 mx-10 text-black text-base font-bold bg-white rounded-lg"
+        <transition name="slide">
+            <ul
+                v-if="isVisibleHerGuestList"
+                class="flex flex-col justify-center items-center"
+            >
+                <li
+                    v-for="(item, index) in dataBride"
+                    :key="index"
+                    class="flex flex-col items-center"
                 >
-                    <p class="p-2">
-                        {{ item.guestName }} and {{ item.partner }}
-                    </p>
-                    <font-awesome-icon
-                        :icon="
-                            isVisibleHisGuestList
-                                ? ['fas', 'caret-down']
-                                : ['fas', 'caret-up']
+                    <div
+                        @click="
+                            dataBride[index].visible = !dataBride[index].visible
                         "
-                    />
-                </div>
-            </li>
-        </ul>
+                        class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+                    >
+                        <div class="p-2">
+                            {{ item.guestName }}
+                            and
+                            {{ item.partner }}
+                        </div>
+                        <font-awesome-icon
+                            :icon="
+                                !dataBride[index].visible
+                                    ? ['fas', 'caret-down']
+                                    : ['fas', 'caret-up']
+                            "
+                        />
+                    </div>
+                    <transition name="slide">
+                        <div
+                            v-if="item.visible"
+                            class="relative z-10 w-60 max-h-[350px] bg-glacier"
+                        >
+                            <div class="text-black p-5">
+                                <p class="">Phone number</p>
+                                <input
+                                    v-model="updateState.phoneNumber"
+                                    type="text"
+                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                    :placeholder="item.phoneNumber"
+                                />
+                                <p>Number of children</p>
+                                <input
+                                    v-model="updateState.children"
+                                    type="text"
+                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                    :placeholder="item.children"
+                                />
+                                <p>Overnight stays</p>
+                                <input
+                                    v-model="updateState.overnightStays"
+                                    type="text"
+                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                    :placeholder="item.overnightStays"
+                                />
+                                <p>Address</p>
+                                <input
+                                    v-model="updateState.address"
+                                    type="text"
+                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                    :placeholder="item.address"
+                                />
+
+                                <div class="p-1.5">
+                                    <input
+                                        v-model="item.isInvited"
+                                        type="checkbox"
+                                        @change="
+                                            updateState.isInvited =
+                                                item.isInvited
+                                        "
+                                    /><label class="ml-2"
+                                        >Are they invited?</label
+                                    >
+                                </div>
+
+                                <div class="p-1.5">
+                                    <input
+                                        v-model="item.confirmedGuest"
+                                        type="checkbox"
+                                        @change="
+                                            updateState.confirmedGuest =
+                                                item.confirmedGuest
+                                        "
+                                    /><label class="ml-2"
+                                        >Did they confirm?</label
+                                    >
+                                </div>
+
+                                <div class="ml-auto text-right">
+                                    <font-awesome-icon
+                                        :icon="['fas', 'circle-xmark']"
+                                        class="text-4xl py-3 text-hippiePink"
+                                        @click="deleteGuest(item.id)"
+                                    />
+                                    <font-awesome-icon
+                                        :icon="['fas', 'circle-check']"
+                                        class="text-4xl py-3 ml-3 text-tropicalRainForest"
+                                        @click="updateGuest(item.id)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </transition>
+                </li>
+            </ul>
+        </transition>
     </transition>
 
     <GoBackComponent @click="router.back()" />
