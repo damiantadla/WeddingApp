@@ -21,7 +21,6 @@ const registerData = reactive({
     password: null,
     name: null,
     surname: null,
-    number: null,
 })
 
 const loading = ref(false)
@@ -31,8 +30,7 @@ const registerFunction = async () => {
         registerData.email &&
         registerData.password &&
         registerData.name &&
-        registerData.surname &&
-        registerData.number
+        registerData.surname
     ) {
         try {
             loading.value = true
@@ -90,13 +88,7 @@ const registerFunction = async () => {
                     type="text"
                     placeholder="Surname"
                 />
-                <InputComponent
-                    v-model="registerData.number"
-                    @keyup.enter="registerFunction"
-                    icon="fa-phone"
-                    type="number"
-                    placeholder="Phone Number"
-                />
+
                 <HeartComponent />
             </div>
 
