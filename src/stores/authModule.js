@@ -18,7 +18,7 @@ const { cookies } = useCookies()
 
 export default {
     actions: {
-        async signup({ dispatch }, { email, password, name, surname, number }) {
+        async signup({ dispatch }, { email, password, name, surname }) {
             if (!name || !surname) {
                 show.error('Please provide more information')
                 return
@@ -39,10 +39,8 @@ export default {
 
                 await dispatch('createDoc', {
                     data: {
-                        name,
-                        surname,
+                        name: `${name} ${surname}`,
                         email,
-                        number,
                         id: user.uid,
                     },
                     path: `users`,
@@ -68,7 +66,6 @@ export default {
                         docID: user.uid,
                     })
 
-                    console.log(data)
                     const quote = await dispatch('getDoc', {
                         collectionID: 'quotations',
                         docID: 'quotations',
@@ -87,36 +84,66 @@ export default {
             }
         },
 
-        async loginWithGoogle({ commit }) {
+        async loginWithGoogle({ commit, dispatch }) {
             try {
                 const provider = new GoogleAuthProvider()
                 const res = await signInWithPopup(auth, provider)
-                commit('setUser', res.user)
+
+                const user = res.user
+
+                const data = await dispatch('getDoc', {
+                    collectionID: 'users',
+                    docID: user.uid,
+                })
+                console.log(user)
+                if (
+                    user.metadata.creationTime === user.metadata.lastSignInTime
+                ) {
+                    await dispatch('createDoc', {
+                        data: {
+                            name: user.displayName,
+                            email: user.email,
+                            id: user.uid,
+                        },
+                        path: `users`,
+                        id: user.uid,
+                    })
+                }
+                const quote = await dispatch('getDoc', {
+                    collectionID: 'quotations',
+                    docID: 'quotations',
+                })
+                commit('setQuote', quote)
+                commit('setUser', user)
+                commit('setData', data)
+
+                cookies.set('user', res.user.uid)
                 show.success('Successfully logged in')
             } catch (error) {
-                show.error(error.code)
+                show.error(error)
+                console.log(error)
             }
         },
 
         async loginWithFacebook({ commit }) {
             try {
-                const provider = new FacebookAuthProvider()
+                // const provider = new FacebookAuthProvider()
                 const res = await signInWithPopup(auth, provider)
                 commit('setUser', res.user)
                 show.success('Successfully logged in')
             } catch (error) {
-                show.error(error.code)
+                show.error('Please use Google.')
             }
         },
 
         async loginWithGitHub({ commit }) {
             try {
-                const provider = new GithubAuthProvider()
+                // const provider = new GithubAuthProvider()
                 const res = await signInWithPopup(auth, provider)
                 commit('setUser', res.user)
                 show.success('Successfully logged in')
             } catch (error) {
-                show.error(error.code)
+                show.error('Please use Google.')
             }
         },
 
