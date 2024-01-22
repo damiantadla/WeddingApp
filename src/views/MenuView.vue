@@ -148,7 +148,7 @@ const {
             </router-link>
         </div>
         <div class="px-10">
-            <p v-if="name">Name: {{ name }} {{ surname }}</p>
+            <p v-if="name">Name: {{ name }}</p>
             <p v-if="surname">E-mail: {{ email }}</p>
             <p v-if="number">Number: {{ number }}</p>
             <p v-if="dateWedding">
