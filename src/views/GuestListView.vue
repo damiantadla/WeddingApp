@@ -11,6 +11,9 @@ import HeartComponent from '@/components/HeartComponent.vue'
 import ParafComponent from '@/components/ParafComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
+import LineComponent from '@/components/LineComponent.vue'
+import MenuView from '@/views/MenuView.vue'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import { toast } from 'vue3-toastify'
 
@@ -91,15 +94,6 @@ const isVisibleHerGuestList = ref(false)
 const isLoading = ref(false)
 const category = ref('bride')
 
-watch(
-    () => dataGroom,
-    (newArray, oldArray) => {
-        if (JSON.stringify(newArray) !== JSON.stringify(oldArray)) {
-            console.log('Tablica się zmieniła!')
-        }
-    },
-    { deep: true },
-)
 const sendGuest = async () => {
     isLoading.value = true
     try {
@@ -114,6 +108,7 @@ const sendGuest = async () => {
                 data: { ...state },
                 path: `/users/${store.getters.id}/guests`,
             })
+            console.log(state.whoseGuests)
             state.whoseGuests === 'groom'
                 ? dataGroom.value.push({ ...state, visible: false })
                 : dataBride.value.push({ ...state, visible: false })
@@ -175,15 +170,15 @@ const updateGuest = async (id) => {
 import 'jspdf-autotable'
 import { jsPDF } from 'jspdf'
 const generatePDF = () => {
-    const fileName = `Wedding-List-${store.getters.getData.name}- ${store.getters.getData.partnerWedding}`
+    const fileName = `Wedding-Guest-List-${store.getters.getData.name}-${store.getters.getData.partnerWedding}`
     const dataPdf = {
         heading: 'WEDDING GUEST LIST',
         stats: [
             `Number of invited guests: ${stats.totalGuests}`,
             `Number of overnight stays: ${stats.totalOvernightStays}`,
             `Number of invited children: ${stats.totalChildren}`,
-            `Number of guests on the Bride's side: ${stats.herGuests}`,
-            `Number of guests on the Groom's side: ${stats.hisGuests}`,
+            `Number of adult guests on the Bride's side: ${stats.herGuests}`,
+            `Number of adult guests on the Groom's side: ${stats.hisGuests}`,
         ],
     }
     const columns = [
@@ -236,337 +231,389 @@ const generatePDF = () => {
 }
 
 onBeforeMount(getGuests)
+const onChangeMethod = () => {
+    // Tu dodaj kod, który ma się wykonać po zmianie wartości w <select>
+    // Na przykład, możesz skorzystać z wartości state.whoseGuests
+    console.log('Zmieniono wartość:', state.whoseGuests)
+}
 </script>
 
 <template>
     <LoadingComponent v-if="isLoading" />
-    <IconComponent class="mt-6" />
-    <div class="flex justify-center items-center flex-col">
-        <TitleComponent text="Guest List" class="text-center text-4xl m-8" />
-        <ButtonComponent
-            text="Generate the guest list"
-            class="text-center w-60"
-        />
-    </div>
-    <TitleComponent text="Stats" class="ml-8 mt-8" />
-    <div class="mx-10 mt-4">
-        <ParafComponent :text="'Total guests: ' + stats.totalGuests" />
-        <ParafComponent :text="'His guests:' + stats.hisGuests" />
-        <ParafComponent :text="'Her guests: ' + stats.herGuests" />
-        <ParafComponent :text="'Children: ' + stats.totalChildren" />
-        <ParafComponent
-            :text="'Total overnight stays: ' + stats.totalOvernightStays"
-        />
-    </div>
-    <h1
-        class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-3 mt-6 text-white text-xl font-bold bg-glacier rounded-lg"
-        @click="isVisibleHisGuestList = !isVisibleHisGuestList"
-    >
-        His guest
-        <font-awesome-icon
-            :icon="
-                !isVisibleHisGuestList
-                    ? ['fas', 'caret-down']
-                    : ['fas', 'caret-up']
-            "
-        />
-    </h1>
-    <transition name="slide">
-        <ul
-            v-if="isVisibleHisGuestList"
-            class="flex flex-col justify-center items-center"
-        >
-            <li
-                v-for="(item, index) in dataGroom"
-                :key="index"
-                class="flex flex-col items-center"
-            >
-                <div
-                    @click="
-                        dataGroom[index].visible = !dataGroom[index].visible
-                    "
-                    class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+    <IconComponent class="mt-6 xl:hidden" />
+    <MenuView class="hidden xl:block mb-20" />
+    <div class="flex flex-col xl:flex-row justify-center">
+        <div class="xl:mr-20">
+            <div class="flex justify-center items-center flex-col">
+                <TitleComponent
+                    text="Guest List"
+                    class="text-center text-4xl m-8"
+                />
+                <ButtonComponent
+                    @click="generatePDF"
+                    text="Generate the guest list"
+                    class="text-center w-60"
+                />
+            </div>
+
+            <div class="flex flex-col items-center mx-10 mt-4">
+                <div class="flex flex-col">
+                    <TitleComponent
+                        text="Stats"
+                        class="mb-4 xl:text-3xl xl:mt-20"
+                    />
+                    <ParafComponent
+                        :text="'Total guests: ' + stats.totalGuests"
+                    />
+                    <ParafComponent :text="'His guests:' + stats.hisGuests" />
+                    <ParafComponent :text="'Her guests: ' + stats.herGuests" />
+                    <ParafComponent
+                        :text="'Children: ' + stats.totalChildren"
+                    />
+                    <ParafComponent
+                        :text="
+                            'Total overnight stays: ' +
+                            stats.totalOvernightStays
+                        "
+                    />
+                </div>
+            </div>
+        </div>
+        <LineComponent class="hidden xl:block" />
+        <div class="flex justify-center">
+            <div>
+                <h1
+                    class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-3 mt-6 text-white text-xl font-bold bg-glacier rounded-lg"
+                    @click="isVisibleHisGuestList = !isVisibleHisGuestList"
                 >
-                    <div class="p-2">
-                        {{ item.guestName }}
-                        and
-                        {{ item.partner }}
-                    </div>
+                    His guest
                     <font-awesome-icon
                         :icon="
-                            !dataGroom[index].visible
+                            !isVisibleHisGuestList
                                 ? ['fas', 'caret-down']
                                 : ['fas', 'caret-up']
                         "
                     />
-                </div>
+                </h1>
                 <transition name="slide">
-                    <div
-                        v-if="item.visible"
-                        class="relative z-10 w-60 max-h-[350px] bg-glacier"
+                    <ul
+                        v-if="!isVisibleHisGuestList"
+                        class="flex flex-col justify-center items-center"
                     >
-                        <div class="text-black p-5">
-                            <p class="">Phone number</p>
-                            <input
-                                v-model="updateState.phoneNumber"
-                                type="text"
-                                class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                :placeholder="item.phoneNumber"
-                            />
-                            <p>Number of children</p>
-                            <input
-                                v-model="updateState.children"
-                                type="text"
-                                class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                :placeholder="item.children"
-                            />
-                            <p>Overnight stays</p>
-                            <input
-                                v-model="updateState.overnightStays"
-                                type="text"
-                                class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                :placeholder="item.overnightStays"
-                            />
-                            <p>Address</p>
-                            <input
-                                v-model="updateState.address"
-                                type="text"
-                                class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                :placeholder="item.address"
-                            />
-
-                            <div class="p-1.5">
-                                <input
-                                    v-model="item.isInvited"
-                                    type="checkbox"
-                                    @change="
-                                        updateState.isInvited = item.isInvited
-                                    "
-                                /><label class="ml-2">Are they invited?</label>
-                            </div>
-
-                            <div class="p-1.5">
-                                <input
-                                    v-model="item.confirmedGuest"
-                                    type="checkbox"
-                                    @change="
-                                        updateState.confirmedGuest =
-                                            item.confirmedGuest
-                                    "
-                                /><label class="ml-2">Did they confirm?</label>
-                            </div>
-
-                            <div class="ml-auto text-right">
-                                <font-awesome-icon
-                                    :icon="['fas', 'circle-xmark']"
-                                    class="text-4xl py-3 text-hippiePink"
-                                    @click="deleteGuest(item.id)"
-                                />
-                                <font-awesome-icon
-                                    :icon="['fas', 'circle-check']"
-                                    class="text-4xl py-3 ml-3 text-tropicalRainForest"
-                                    @click="updateGuest(item.id)"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </transition>
-            </li>
-        </ul>
-    </transition>
-    <h1
-        class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-6 text-white text-xl font-bold bg-glacier rounded-lg"
-        @click="isVisibleHerGuestList = !isVisibleHerGuestList"
-    >
-        Her guest
-        <font-awesome-icon
-            :icon="
-                !isVisibleHerGuestList
-                    ? ['fas', 'caret-down']
-                    : ['fas', 'caret-up']
-            "
-        />
-    </h1>
-
-    <transition name="slide">
-        <transition name="slide">
-            <ul
-                v-if="isVisibleHerGuestList"
-                class="flex flex-col justify-center items-center"
-            >
-                <li
-                    v-for="(item, index) in dataBride"
-                    :key="index"
-                    class="flex flex-col items-center"
-                >
-                    <div
-                        @click="
-                            dataBride[index].visible = !dataBride[index].visible
-                        "
-                        class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
-                    >
-                        <div class="p-2">
-                            {{ item.guestName }}
-                            and
-                            {{ item.partner }}
-                        </div>
-                        <font-awesome-icon
-                            :icon="
-                                !dataBride[index].visible
-                                    ? ['fas', 'caret-down']
-                                    : ['fas', 'caret-up']
-                            "
-                        />
-                    </div>
-                    <transition name="slide">
-                        <div
-                            v-if="item.visible"
-                            class="relative z-10 w-60 max-h-[350px] bg-glacier"
+                        <li
+                            v-for="(item, index) in dataGroom"
+                            :key="index"
+                            class="flex flex-col items-center"
                         >
-                            <div class="text-black p-5">
-                                <p class="">Phone number</p>
-                                <input
-                                    v-model="updateState.phoneNumber"
-                                    type="text"
-                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                    :placeholder="item.phoneNumber"
-                                />
-                                <p>Number of children</p>
-                                <input
-                                    v-model="updateState.children"
-                                    type="text"
-                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                    :placeholder="item.children"
-                                />
-                                <p>Overnight stays</p>
-                                <input
-                                    v-model="updateState.overnightStays"
-                                    type="text"
-                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                    :placeholder="item.overnightStays"
-                                />
-                                <p>Address</p>
-                                <input
-                                    v-model="updateState.address"
-                                    type="text"
-                                    class="rounded-xl py-0.5 px-2 w-full placeholder-black"
-                                    :placeholder="item.address"
-                                />
-
-                                <div class="p-1.5">
-                                    <input
-                                        v-model="item.isInvited"
-                                        type="checkbox"
-                                        @change="
-                                            updateState.isInvited =
-                                                item.isInvited
-                                        "
-                                    /><label class="ml-2"
-                                        >Are they invited?</label
-                                    >
+                            <div
+                                @click="
+                                    dataGroom[index].visible =
+                                        !dataGroom[index].visible
+                                "
+                                class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+                            >
+                                <div class="p-2">
+                                    {{ item.guestName }}
+                                    and
+                                    {{ item.partner }}
                                 </div>
-
-                                <div class="p-1.5">
-                                    <input
-                                        v-model="item.confirmedGuest"
-                                        type="checkbox"
-                                        @change="
-                                            updateState.confirmedGuest =
-                                                item.confirmedGuest
-                                        "
-                                    /><label class="ml-2"
-                                        >Did they confirm?</label
-                                    >
-                                </div>
-
-                                <div class="ml-auto text-right">
-                                    <font-awesome-icon
-                                        :icon="['fas', 'circle-xmark']"
-                                        class="text-4xl py-3 text-hippiePink"
-                                        @click="deleteGuest(item.id)"
-                                    />
-                                    <font-awesome-icon
-                                        :icon="['fas', 'circle-check']"
-                                        class="text-4xl py-3 ml-3 text-tropicalRainForest"
-                                        @click="updateGuest(item.id)"
-                                    />
-                                </div>
+                                <font-awesome-icon
+                                    :icon="
+                                        !dataGroom[index].visible
+                                            ? ['fas', 'caret-down']
+                                            : ['fas', 'caret-up']
+                                    "
+                                />
                             </div>
-                        </div>
-                    </transition>
-                </li>
-            </ul>
-        </transition>
-    </transition>
+                            <transition name="slide">
+                                <div
+                                    v-if="item.visible"
+                                    class="relative z-10 w-60 max-h-[350px] bg-glacier"
+                                >
+                                    <div class="text-black p-5">
+                                        <p class="">Phone number</p>
+                                        <input
+                                            v-model="updateState.phoneNumber"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.phoneNumber"
+                                        />
+                                        <p>Number of children</p>
+                                        <input
+                                            v-model="updateState.children"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.children"
+                                        />
+                                        <p>Overnight stays</p>
+                                        <input
+                                            v-model="updateState.overnightStays"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.overnightStays"
+                                        />
+                                        <p>Address</p>
+                                        <input
+                                            v-model="updateState.address"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.address"
+                                        />
 
-    <GoBackComponent @click="router.back()" />
-    <AddButtonComponent @click="isVisibleAddGuest = !isVisibleAddGuest" />
+                                        <div class="p-1.5">
+                                            <input
+                                                v-model="item.isInvited"
+                                                type="checkbox"
+                                                @change="
+                                                    updateState.isInvited =
+                                                        item.isInvited
+                                                "
+                                            /><label class="ml-2"
+                                                >Are they invited?</label
+                                            >
+                                        </div>
 
-    <transition name="slide-fade">
-        <div
-            v-if="isVisibleAddGuest"
-            class="fixed z-50 w-screen h-screen top-0 left-0 bg-glacier"
-        >
-            <IconComponent class="mt-8" />
-            <TitleComponent text="Add your guests" class="ml-8 mt-8" />
-            <div class="flex flex-col items-center">
-                <InputComponent
-                    v-model="state.guestName"
-                    placeholder="Guest"
-                    icon="fa-solid fa-user"
-                />
-                <InputComponent
-                    v-model="state.partner"
-                    placeholder="Partner"
-                    icon="fa-solid fa-user-group"
-                />
-                <InputComponent
-                    v-model="state.children"
-                    placeholder="Number of children"
-                    type="number"
-                    icon="fa-solid fa-users"
-                />
-                <InputComponent
-                    v-model="state.overnightStays"
-                    placeholder="Overnight stays"
-                    type="number"
-                    icon="fa-solid fa-bed"
-                />
-                <InputComponent
-                    v-model="state.phoneNumber"
-                    placeholder="Phone number"
-                    type="number"
-                    icon="fa-solid fa-mobile-screen"
-                />
-                <InputComponent
-                    v-model="state.address"
-                    placeholder="Address"
-                    icon="fa-solid fa-location-dot"
-                />
+                                        <div class="p-1.5">
+                                            <input
+                                                v-model="item.confirmedGuest"
+                                                type="checkbox"
+                                                @change="
+                                                    updateState.confirmedGuest =
+                                                        item.confirmedGuest
+                                                "
+                                            /><label class="ml-2"
+                                                >Did they confirm?</label
+                                            >
+                                        </div>
 
-                <div class="flex flex-col items-center">
-                    <HeartComponent />
-                    <TitleComponent
-                        text="Whose are the guests?"
-                        class="text-lg"
-                    />
-                    <select
-                        v-model="state.whoseGuests"
-                        name="category"
-                        id="category-select"
-                        class="w-[150px] h-[50px] text-black rounded-lg p-2"
+                                        <div class="ml-auto text-right">
+                                            <font-awesome-icon
+                                                :icon="['fas', 'circle-xmark']"
+                                                class="text-4xl py-3 text-hippiePink"
+                                                @click="deleteGuest(item.id)"
+                                            />
+                                            <font-awesome-icon
+                                                :icon="['fas', 'circle-check']"
+                                                class="text-4xl py-3 ml-3 text-tropicalRainForest"
+                                                @click="updateGuest(item.id)"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </transition>
+                        </li>
+                    </ul>
+                </transition>
+            </div>
+        </div>
+        <div class="flex flex-col items-center">
+            <h1
+                class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-6 mb-3 text-white text-xl font-bold bg-glacier rounded-lg"
+                @click="isVisibleHerGuestList = !isVisibleHerGuestList"
+            >
+                Her guest
+                <font-awesome-icon
+                    :icon="
+                        !isVisibleHerGuestList
+                            ? ['fas', 'caret-down']
+                            : ['fas', 'caret-up']
+                    "
+                />
+            </h1>
+
+            <transition name="slide">
+                <transition name="slide">
+                    <ul
+                        v-if="!isVisibleHerGuestList"
+                        class="flex flex-col justify-center items-center"
                     >
-                        <option value="groom">Groom's guests</option>
-                        <option value="bride">Bride's guests</option>
-                    </select>
+                        <li
+                            v-for="(item, index) in dataBride"
+                            :key="index"
+                            class="flex flex-col items-center"
+                        >
+                            <div
+                                @click="
+                                    dataBride[index].visible =
+                                        !dataBride[index].visible
+                                "
+                                class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+                            >
+                                <div class="p-2">
+                                    {{ item.guestName }}
+                                    and
+                                    {{ item.partner }}
+                                </div>
+                                <font-awesome-icon
+                                    :icon="
+                                        !dataBride[index].visible
+                                            ? ['fas', 'caret-down']
+                                            : ['fas', 'caret-up']
+                                    "
+                                />
+                            </div>
+                            <transition name="slide">
+                                <div
+                                    v-if="item.visible"
+                                    class="relative z-10 w-60 max-h-[350px] bg-glacier"
+                                >
+                                    <div class="text-black p-5">
+                                        <p class="">Phone number</p>
+                                        <input
+                                            v-model="updateState.phoneNumber"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.phoneNumber"
+                                        />
+                                        <p>Number of children</p>
+                                        <input
+                                            v-model="updateState.children"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.children"
+                                        />
+                                        <p>Overnight stays</p>
+                                        <input
+                                            v-model="updateState.overnightStays"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.overnightStays"
+                                        />
+                                        <p>Address</p>
+                                        <input
+                                            v-model="updateState.address"
+                                            type="text"
+                                            class="rounded-xl py-0.5 px-2 w-full placeholder-black"
+                                            :placeholder="item.address"
+                                        />
+
+                                        <div class="p-1.5">
+                                            <input
+                                                v-model="item.isInvited"
+                                                type="checkbox"
+                                                @change="
+                                                    updateState.isInvited =
+                                                        item.isInvited
+                                                "
+                                            /><label class="ml-2"
+                                                >Are they invited?</label
+                                            >
+                                        </div>
+
+                                        <div class="p-1.5">
+                                            <input
+                                                v-model="item.confirmedGuest"
+                                                type="checkbox"
+                                                @change="
+                                                    updateState.confirmedGuest =
+                                                        item.confirmedGuest
+                                                "
+                                            /><label class="ml-2"
+                                                >Did they confirm?</label
+                                            >
+                                        </div>
+
+                                        <div class="ml-auto text-right">
+                                            <font-awesome-icon
+                                                :icon="['fas', 'circle-xmark']"
+                                                class="text-4xl py-3 text-hippiePink"
+                                                @click="deleteGuest(item.id)"
+                                            />
+                                            <font-awesome-icon
+                                                :icon="['fas', 'circle-check']"
+                                                class="text-4xl py-3 ml-3 text-tropicalRainForest"
+                                                @click="updateGuest(item.id)"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </transition>
+                        </li>
+                    </ul>
+                </transition>
+            </transition>
+        </div>
+
+        <GoBackComponent @click="router.back()" class="z-20" />
+        <AddButtonComponent @click="isVisibleAddGuest = !isVisibleAddGuest" />
+
+        <transition name="slide-fade">
+            <div
+                v-if="isVisibleAddGuest"
+                class="xl:max-w-[440px] fixed z-50 w-screen h-screen overflow-auto top-0 right-0 bg-glacier"
+            >
+                <IconComponent class="mt-8" />
+                <TitleComponent
+                    text="Add your guests"
+                    class="mt-8 text-center"
+                />
+                <div class="flex flex-col justify-center items-center">
+                    <InputComponent
+                        v-model="state.guestName"
+                        placeholder="Guest"
+                        icon="fa-solid fa-user"
+                    />
+                    <InputComponent
+                        v-model="state.partner"
+                        placeholder="Partner"
+                        icon="fa-solid fa-user-group"
+                    />
+                    <InputComponent
+                        v-model="state.children"
+                        placeholder="Number of children"
+                        type="number"
+                        icon="fa-solid fa-users"
+                    />
+                    <InputComponent
+                        v-model="state.overnightStays"
+                        placeholder="Overnight stays"
+                        type="number"
+                        icon="fa-solid fa-bed"
+                    />
+                    <InputComponent
+                        v-model="state.phoneNumber"
+                        placeholder="Phone number"
+                        type="number"
+                        icon="fa-solid fa-mobile-screen"
+                    />
+                    <InputComponent
+                        v-model="state.address"
+                        placeholder="Address"
+                        icon="fa-solid fa-location-dot"
+                    />
+
+                    <div class="flex flex-col items-center">
+                        <HeartComponent />
+                        <TitleComponent
+                            text="Whose guests are they?"
+                            class="text-lg mt-4"
+                        />
+                        <select
+                            v-model="state.whoseGuests"
+                            name="category"
+                            id="category-select"
+                            class="w-[150px] h-[50px] text-black rounded-lg p-2 mt-5"
+                            @change="onChangeMethod"
+                        >
+                            <option value="groom" selected>
+                                Groom's guests
+                            </option>
+                            <option value="bride">Bride's guests</option>
+                        </select>
+
+                        <div
+                            class="w-screen xl:w-[400px] flex justify-between m-4 mt-10"
+                        >
+                            <font-awesome-icon
+                                @click="isVisibleAddGuest = !isVisibleAddGuest"
+                                :icon="['far', 'circle-left']"
+                                class="text-6xl text-white ml-4"
+                            />
+                            <SendComponent @click="sendGuest" class="mr-4" />
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <GoBackComponent @click="isVisibleAddGuest = !isVisibleAddGuest" />
-            <SendComponent
-                @click="sendGuest"
-                class="fixed bottom-0 right-0 m-4"
-            />
-        </div>
-    </transition>
+        </transition>
+    </div>
 </template>

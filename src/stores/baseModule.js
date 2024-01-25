@@ -33,6 +33,13 @@ export default {
                 ...data,
             })
         },
+        async setDocAndGetId(context, { data, path }) {
+            const docRef = await addDoc(collection(db, `${path}`), {
+                ...data,
+            })
+
+            return docRef.id
+        },
         async getDoc(context, { collectionID, docID }) {
             const docRef = doc(db, collectionID, docID)
             const docSnap = await getDoc(docRef)
@@ -90,6 +97,7 @@ export default {
                 return url
             } catch (error) {
                 show.error(error.message)
+                console.log(error)
             }
         },
         async deleteDoc(context, { path, id }) {

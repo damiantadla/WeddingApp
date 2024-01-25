@@ -10,6 +10,7 @@ import IconComponent from '@/components/IconComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import GoBackComponent from '@/components/GoBackComponent.vue'
 import AddButtonComponent from '@/components/AddButtonComponent.vue'
+import MenuView from '@/views/MenuView.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -25,7 +26,7 @@ const data = reactive({
     categories: [
         {
             name: 'Wedding Venue',
-            visible: false,
+            visible: true,
             items: [],
         },
         {
@@ -164,7 +165,8 @@ const addFileToVariable = (event) => {
 </script>
 <template>
     <LoadingComponent v-if="loading" />
-    <IconComponent class="mt-8" />
+    <MenuView class="mb-15" />
+    <IconComponent class="xl:hidden mt-8" />
     <div class="flex flex-col p-8 justify-center items-center">
         <TitleComponent text="Inspirations" class="text-3xl mb-4" />
         <div
@@ -172,36 +174,43 @@ const addFileToVariable = (event) => {
             v-for="(category, index) in data.categories"
             :key="index"
         >
-            <h1
-                class="flex justify-between items-center w-full h-10 px-4 text-xl font-bold bg-glacier bg-opacity-70 rounded-lg"
-                @click="
-                    data.categories[index].visible =
-                        !data.categories[index].visible
-                "
-            >
-                {{ category.name }}
-                <font-awesome-icon
-                    :icon="
-                        !category.visible
-                            ? ['fas', 'caret-down']
-                            : ['fas', 'caret-up']
+            <div class="flex justify-center">
+                <h1
+                    class="sm:w-[640px] xl:w-[940px] 2xl:w-[1280px] flex justify-between items-center w-full h-10 px-4 text-xl font-bold bg-glacier bg-opacity-70 rounded-lg"
+                    @click="
+                        data.categories[index].visible =
+                            !data.categories[index].visible
                     "
-                />
-            </h1>
+                >
+                    {{ category.name }}
+                    <font-awesome-icon
+                        :icon="
+                            !category.visible
+                                ? ['fas', 'caret-down']
+                                : ['fas', 'caret-up']
+                        "
+                    />
+                </h1>
+            </div>
             <transition name="slide">
-                <ul v-if="category.visible">
-                    <li v-for="item in category.items" :key="item.id">
-                        <img
-                            :src="item.url"
-                            alt="Wedding Image"
-                            @click="showFullScreenImage(item.id, item.url)"
-                            class="my-3 pt-4 px-4"
-                        />
-                    </li>
-                    <div v-if="category.items.length === 0" class="p-4">
-                        <h1>Lack of inspiration</h1>
-                    </div>
-                </ul>
+                <div class="flex justify-center">
+                    <ul
+                        v-if="category.visible"
+                        class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
+                    >
+                        <li v-for="item in category.items" :key="item.id">
+                            <img
+                                :src="item.url"
+                                alt="Wedding Image"
+                                @click="showFullScreenImage(item.id, item.url)"
+                                class="w-[300px] h-[250px] my-3 pt-4 px-4"
+                            />
+                        </li>
+                        <div v-if="category.items.length === 0" class="p-4">
+                            <h1>Add a new inspiration</h1>
+                        </div>
+                    </ul>
+                </div>
             </transition>
         </div>
         <transition name="slide-fade">
@@ -210,30 +219,26 @@ const addFileToVariable = (event) => {
                 class="fixed z-20 top-0 h-screen w-screen"
             >
                 <div
-                    class="fixed z-30 top-0 h-screen w-screen flex justify-center items-center bg-black bg-opacity-90"
+                    class="fixed z-20 top-0 h-screen w-screen flex justify-center items-center bg-black bg-opacity-90"
                     @click="closeFullScreenImage"
                 ></div>
                 <div
-                    class="fixed z-40 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    class="fixed z-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
-                    <div class="relative w-screen p-6">
-                        <img
-                            :src="isVisibleImage"
-                            alt="Image inspiration"
-                            class="w-full"
-                        />
-                    </div>
-                    <div class="absolute -top-2 right-4 bg-cream py-1 px-2">
-                        <font-awesome-icon
-                            @click="removeItemInspiration"
-                            :icon="['fas', 'trash']"
-                            class="text-4xl text-hippiePink px-2"
-                        />
-                        <font-awesome-icon
-                            @click="closeFullScreenImage"
-                            :icon="['fas', 'circle-arrow-right']"
-                            class="text-4xl text-tropicalRainForest px-2"
-                        />
+                    <div class="w-[380px] xl:w-[800px] relative p-6">
+                        <img :src="isVisibleImage" alt="Image inspiration" />
+                        <div class="absolute top-0 right-0 py-1 px-2 bg-white">
+                            <font-awesome-icon
+                                @click="removeItemInspiration"
+                                :icon="['fas', 'trash']"
+                                class="text-4xl text-hippiePink px-2"
+                            />
+                            <font-awesome-icon
+                                @click="closeFullScreenImage"
+                                :icon="['fas', 'circle-arrow-right']"
+                                class="text-4xl text-tropicalRainForest px-2"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -247,7 +252,7 @@ const addFileToVariable = (event) => {
     <transition name="slide-fade">
         <div
             v-if="isVisible"
-            class="fixed bottom-0 flex flex-col p-5 h-[220px] w-full bg-glacier"
+            class="xl:w-[400px] fixed z-100 bottom-0 right-0 flex flex-col p-5 h-[220px] w-full bg-glacier"
         >
             <div class="flex justify-between">
                 <TitleComponent text="Add inspiration" />
@@ -286,11 +291,15 @@ const addFileToVariable = (event) => {
                     />
                 </div>
 
-                <button @click="sendImage" class="border-4 p-2 rounded-lg">
-                    <font-awesome-icon
-                        :icon="['far', 'paper-plane']"
-                        class="text-white text-4xl"
-                    />
+                <button
+                    @click="sendImage"
+                    class="w-16 border-4 p-2 rounded-full"
+                >
+                    <!--                    <font-awesome-icon-->
+                    <!--                        :icon="['far', 'paper-plane']"-->
+                    <!--                        class="text-white text-[20px]"-->
+                    <!--                    />-->
+                    <img src="@/assets/icons/send.svg" alt="Send icon" />
                 </button>
             </div>
         </div>

@@ -5,8 +5,6 @@ import { useCookies } from 'vue3-cookies'
 import { RouterView } from 'vue-router'
 import { toast } from 'vue3-toastify'
 
-import IconComponent from '@/components/IconComponent.vue'
-
 const { cookies } = useCookies()
 
 onBeforeMount(() => {

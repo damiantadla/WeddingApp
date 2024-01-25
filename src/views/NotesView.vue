@@ -11,15 +11,18 @@ import InputComponent from '@/components/InputComponent.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import AddButtonComponent from '@/components/AddButtonComponent.vue'
 import GoBackComponent from '@/components/GoBackComponent.vue'
+import EditorView from '@/views/EditorView.vue'
+import MenuView from '@/views/MenuView.vue'
 
 const router = useRouter()
 const store = useStore()
 
 const visibleEditor = ref(false)
 const searchTitle = ref('')
-const loading = ref(true)
+const loading = ref(false)
 const data = ref([])
 const matchingItems = ref([])
+const isVisibleEditor = ref(false)
 const goBack = () => {
     router.replace('/user')
 }
@@ -71,14 +74,23 @@ const deleteDoc = async (itemID) => {
             path: `users/${store.getters.id}/notes`,
             id: itemID,
         })
+        data.value = data.value.filter((obj) => obj.id !== itemID)
     } catch (error) {
         toast.error(error.code)
     }
-    data.value = data.value.filter((obj) => obj.id !== itemID)
+}
+const changeVisibleEditor = (val) => {
+    isVisibleEditor.value = val
+}
+
+const changeData = (val) => {
+    console.log(val)
+    data.value.push(val)
 }
 </script>
 <template>
-    <IconComponent class="pt-6" />
+    <IconComponent class="xl:hidden pt-6" />
+    <MenuView class="mb-15" />
     <LoadingComponent v-if="loading" />
     <TitleComponent
         v-if="!visibleEditor"
@@ -91,56 +103,76 @@ const deleteDoc = async (itemID) => {
         v-model="searchTitle"
     />
 
-    <ul class="p-8 text-white flex flex-col items-center justify-center">
-        <li
-            v-for="item in computedList"
-            :key="item.id"
-            class="bg-lightningYellow w-80 my-4 rounded-lg"
+    <div class="flex justify-center mt-20">
+        <ul
+            class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"
         >
-            <div>
-                <div class="relative flex flex-col h-[250px] p-2">
-                    <div class="flex justify-between p-2 border-b-2">
-                        <p class="text-2xl">{{ item.title }}</p>
+            <li
+                v-for="item in computedList"
+                :key="item.id"
+                class="md:m-4 bg-lightningYellow w-80 my-4 rounded-lg"
+            >
+                <div>
+                    <div class="relative flex flex-col h-[250px] p-2">
+                        <div class="flex justify-between p-2 border-b-2">
+                            <p class="text-2xl font-bold text-white">
+                                {{ item.title }}
+                            </p>
 
-                        <font-awesome-icon
-                            @click="toggleEdit(item.id)"
-                            :icon="['fas', 'pen-to-square']"
-                            class="text-3xl"
-                        />
-                    </div>
+                            <font-awesome-icon
+                                @click="toggleEdit(item.id)"
+                                :icon="['fas', 'pen-to-square']"
+                                class="text-3xl"
+                            />
+                        </div>
 
-                    <perfect-scrollbar class="px-4 my-2">
-                        <p class="whitespace-normal" v-html="item.text"></p>
-                    </perfect-scrollbar>
+                        <perfect-scrollbar class="px-4 my-2 text-white">
+                            <p class="whitespace-normal" v-html="item.text"></p>
+                        </perfect-scrollbar>
 
-                    <div
-                        class="absolute w-full bottom-0 w-100 bg-white bg-opacity-90"
-                    >
-                        <transition name="slide-fade">
-                            <div
-                                v-if="isVisible === item.id"
-                                class="flex justify-end items-center p-2 pr-4 text-right text-lightningYellow"
-                            >
-                                <p class="pr-2 item-center text-base">
-                                    Created on {{ item.date }}
-                                </p>
-                                <font-awesome-icon
-                                    @click="deleteDoc(item.id)"
-                                    :icon="['fas', 'circle-xmark']"
-                                    class="text-4xl"
-                                />
-                            </div>
-                        </transition>
+                        <div
+                            class="absolute w-full bottom-0 w-100 bg-white bg-opacity-90"
+                        >
+                            <transition name="slide-fade">
+                                <div
+                                    v-if="isVisible === item.id"
+                                    class="flex justify-end items-center p-2 pr-4 text-right text-lightningYellow"
+                                >
+                                    <p class="pr-2 item-center text-base">
+                                        Created on {{ item.date }}
+                                    </p>
+                                    <font-awesome-icon
+                                        @click="deleteDoc(item.id)"
+                                        :icon="['fas', 'circle-xmark']"
+                                        class="text-4xl"
+                                    />
+                                </div>
+                            </transition>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </li>
-    </ul>
+            </li>
+        </ul>
+    </div>
+    <EditorView
+        v-if="isVisibleEditor"
+        @change-visible-editor="changeVisibleEditor"
+        @change-data="changeData"
+    />
 
     <div>
-        <GoBackComponent @click="goBack" />
-        <AddButtonComponent @click="router.push('notes/edit')" />
+        <font-awesome-icon
+            @click="goBack"
+            class="xl:hidden fixed bottom-10 left-4 text-6xl cursor-pointer text-white"
+            :icon="['fas', 'circle-left']"
+        />
+        <font-awesome-icon
+            @click="isVisibleEditor = !isVisibleEditor"
+            class="fixed bottom-10 z-10 right-4 text-white text-6xl cursor-pointer"
+            :icon="['fas', 'circle-plus']"
+        />
     </div>
+
     <div class="h-[40px]"></div>
 </template>
 <style>

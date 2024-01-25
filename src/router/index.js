@@ -43,11 +43,6 @@ const router = createRouter({
             component: NotesView,
         },
         {
-            path: '/user/notes/edit',
-            name: 'EditorView',
-            component: EditorView,
-        },
-        {
             path: '/user/inspirations',
             name: 'InspirationsView',
             component: InspirationsView,

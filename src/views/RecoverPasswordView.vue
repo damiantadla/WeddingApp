@@ -1,7 +1,9 @@
 <script setup>
+import { ref } from 'vue'
+
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
-import { ref } from 'vue'
 import TitleComponent from '@/components/TitleComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
@@ -9,17 +11,16 @@ import HeartComponent from '@/components/HeartComponent.vue'
 import GoBackComponent from '@/components/GoBackComponent.vue'
 
 const store = useStore()
-const emit = defineEmits()
+const router = useRouter()
+
+const goBack = () => router.push('/')
 
 const email = ref('')
-
-const emitClickBack = () => emit('clickBack')
-
 const sendEmail = async () => {
     await store.dispatch('recoverPassword', {
         email: email.value,
     })
-    emitClickBack()
+    goBack()
 }
 </script>
 <template>
@@ -45,6 +46,6 @@ const sendEmail = async () => {
             />
         </div>
 
-        <GoBackComponent @click="emitClickBack" />
+        <GoBackComponent @click="goBack" />
     </div>
 </template>

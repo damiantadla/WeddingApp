@@ -50,12 +50,6 @@ const loginWithGitHub = async () => {
     router.push({ name: 'UserView' })
 }
 
-const componentsVisible = reactive({
-    login: true,
-    recovery: false,
-    register: false,
-})
-
 const showComponents = (component) => {
     for (const key in componentsVisible) {
         key === component
@@ -66,81 +60,85 @@ const showComponents = (component) => {
 </script>
 
 <template>
-    <RegisterView
-        v-if="componentsVisible.register"
-        @clickBack="showComponents('login')"
-    />
-    <RecoverPasswordView
-        v-if="componentsVisible.recovery"
-        @clickBack="showComponents('login')"
-    />
-    <div
-        v-if="componentsVisible.login"
-        class="max-w-sm flex flex-col justify-center items-center mx-auto my-auto"
-    >
-        <div class="max-w-sm flex flex-col justify-cente">
-            <div class="flex flex-col justify-center items-center mt-10">
-                <TitleComponent text="Hello!" />
-                <TitleComponent text="Welcome Back" />
-            </div>
-            <div class="flex flex-col justify-center items-center mt-6">
-                <InputComponent
-                    v-model="email"
-                    @keyup.enter="loginFunction"
-                    icon="fa-envelope"
-                    placeholder="Email"
-                />
-                <InputComponent
-                    v-model="password"
-                    @keyup.enter="loginFunction"
-                    icon="fa-lock"
-                    type="password"
-                    placeholder="Password"
-                />
-            </div>
-            <ParafComponent
-                @click="showComponents('recovery')"
-                class="flex justify-end mt-3 mr-8 cursor-pointer"
-                text="Recover Password?"
-            />
-            <div class="flex flex-row justify-center">
-                <ButtonComponent
-                    @click="loginFunction"
-                    text="Sign In"
-                    class="w-80 flex justify-center mt-12 font-bold"
-                />
-            </div>
-            <div class="flex flex-row justify-center items-center mt-8">
-                <div class="w-1/4 h-[1.5px] bg-gray-400"></div>
-                <ParafComponent class="mx-2" text="Or continue with" />
-                <div class="w-1/4 h-[1.5px] bg-gray-400"></div>
-            </div>
+    <IconComponent class="mt-24" />
+    <div class="w-screen flex justify-center">
+        <div class="flex w-[850px] items-center justify-center">
+            <div class="w-[400px] flex flex-col justify-center items-center">
+                <div class="max-w-sm flex flex-col justify-center">
+                    <div
+                        class="flex flex-col justify-center items-center mt-14"
+                    >
+                        <TitleComponent text="Hello!" />
+                        <TitleComponent text="Welcome Back" />
+                    </div>
+                    <div class="flex flex-col justify-center items-center mt-6">
+                        <InputComponent
+                            v-model="email"
+                            @keyup.enter="loginFunction"
+                            icon="fa-envelope"
+                            placeholder="Email"
+                        />
+                        <InputComponent
+                            v-model="password"
+                            @keyup.enter="loginFunction"
+                            icon="fa-lock"
+                            type="password"
+                            placeholder="Password"
+                        />
+                    </div>
+                    <router-link :to="{ name: 'RecoverPasswordView' }">
+                        <ParafComponent
+                            class="flex justify-end mt-3 mr-8 cursor-pointer"
+                            text="Recover Password?"
+                        />
+                    </router-link>
+                    <div class="flex flex-row justify-center">
+                        <ButtonComponent
+                            @click="loginFunction"
+                            text="Sign In"
+                            class="w-80 flex justify-center mt-12 font-bold"
+                        />
+                    </div>
+                    <div class="flex flex-row justify-center items-center mt-8">
+                        <div class="w-1/4 h-[1.5px] bg-gray-400"></div>
+                        <ParafComponent class="mx-2" text="Or continue with" />
+                        <div class="w-1/4 h-[1.5px] bg-gray-400"></div>
+                    </div>
 
-            <div class="w-full flex flex-col justify-center items-center mt-8">
-                <div class="w-80 flex">
-                    <ButtonComponent
-                        @click="loginWithGoogle"
-                        icon="fa-google"
-                        class="flex-1 mx-2 py-3 rounded-md text-google"
-                    />
-                    <ButtonComponent
-                        @click="loginWithFacebook"
-                        icon="fa-facebook"
-                        class="flex-1 mx-2 py-3 rounded-md text-facebook"
-                    />
-                    <ButtonComponent
-                        @click="loginWithGitHub"
-                        icon="fa-github"
-                        class="flex-1 mx-2 py-3 rounded-md text-github"
-                    />
+                    <div
+                        class="w-full flex flex-col justify-center items-center mt-8"
+                    >
+                        <div class="w-80 flex">
+                            <ButtonComponent
+                                @click="loginWithGoogle"
+                                icon="fa-google"
+                                class="flex-1 mx-2 py-3 rounded-md text-google"
+                            />
+                            <ButtonComponent
+                                @click="loginWithFacebook"
+                                icon="fa-facebook"
+                                class="flex-1 mx-2 py-3 rounded-md text-facebook"
+                            />
+                            <ButtonComponent
+                                @click="loginWithGitHub"
+                                icon="fa-github"
+                                class="flex-1 mx-2 py-3 rounded-md text-github"
+                            />
+                        </div>
+                        <router-link :to="{ name: 'RegisterView' }">
+                            <ParafComponent
+                                class="mt-8 cursor-pointer md:hidden"
+                                text="Don't have an account?"
+                                text-bold="Create Account!"
+                            />
+                        </router-link>
+                    </div>
                 </div>
-                <ParafComponent
-                    @click="showComponents('register')"
-                    class="mt-8 cursor-pointer"
-                    text="Don't have an account?"
-                    text-bold="Create Account!"
-                />
             </div>
+            <div
+                class="hidden md:block border-[1px] h-[580px] opacity-50 mt-10"
+            ></div>
+            <RegisterView class="hidden md:block" />
         </div>
     </div>
 </template>
