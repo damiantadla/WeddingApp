@@ -29,7 +29,7 @@ const {
 
 <template>
     <div
-        class="w-[430px] h-[1000px] top-0 right-0 flex flex-col justify-center bg-blackGrey pt-4"
+        class="h-[1000px] w-screen md:w-[400px] top-0 right-0 flex flex-col justify-center bg-blackGrey pt-4"
     >
         <IconComponent />
         <div class="flex justify-between">

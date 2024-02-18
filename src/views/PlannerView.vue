@@ -16,17 +16,8 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 const router = useRouter()
 const store = useStore()
 const date = ref(new Date())
-const formattedDate = ref(
-    date.value.toLocaleString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-    }),
-)
-const title = ref('')
+const formattedDate = ref(new Date())
+const title = ref()
 const isLoading = ref(false)
 const data = ref([])
 
@@ -82,7 +73,6 @@ const addNewEvent = async () => {
                 minute: 'numeric',
                 second: 'numeric',
             })
-
             const res = await store.dispatch('setDocAndGetId', {
                 data: {
                     title: title.value,
@@ -91,7 +81,7 @@ const addNewEvent = async () => {
                 },
                 path: `/users/${store.getters.id}/planner`,
             })
-
+            console.log(formattedDate.value)
             data.value.push({
                 id: res,
                 title: title.value,
@@ -131,17 +121,20 @@ const showInfo = (e) => {
     const getShortMonthName = (date) => {
         return date.toLocaleString('en-GB', { month: 'short' })
     }
+
     const day = inputDate.getDate()
     const shortMonth = getShortMonthName(inputDate)
     const year = inputDate.getFullYear()
     const formattedDate = `${day} ${shortMonth} ${year}`
 
-    const isDateIncluded = data.value.filter((item) =>
-        item.dates.includes(formattedDate),
-    )
-
+    const isDateIncluded = []
+    for (const item of data.value) {
+        const newString = item.dates.split(',')
+        if (formattedDate === newString[0]) isDateIncluded.push(item)
+    }
     if (isDateIncluded.length) {
         for (const item of isDateIncluded) {
+            console.log(item)
             const newString = item.dates.split(',')
             toast.info(`${newString[1]} - ${item.title}`, { autoClose: 6000 })
         }
@@ -151,14 +144,14 @@ const showInfo = (e) => {
 const timezone = ref('UTC')
 </script>
 <template>
-    <div class="flex flex-col xl:flex-row">
+    <div class="flex flex-col items-center xl:flex-row">
         <LoadingComponent v-if="isLoading" />
         <IconComponent class="mt-8 xl:hidden" />
         <p class="text-center text-white font-bold text-4xl mt-10 xl:mb-5">
             Calendar
         </p>
 
-        <div class="flex flex-col items-start md:flex-row">
+        <div class="flex flex-col items-center xl:items-start xl:flex-row">
             <div class="flex flex-col items-center mt-10 xl:mt-0">
                 <VDatePicker
                     v-model="formattedDate"
@@ -179,9 +172,9 @@ const timezone = ref('UTC')
                     />
                     <button
                         @click="addNewEvent"
-                        class="border-2 ml-2 mt-5 w-16 h-12 rounded-full"
+                        class="border-2 ml-2 mt-3 w-16 h-12 rounded-full"
                     >
-                        <font-awesome-icon :icon="['fas', 'plus']" />
+                        <font-awesome-icon :icon="['fas', 'plus']" class="text-white"/>
                     </button>
                 </div>
             </div>

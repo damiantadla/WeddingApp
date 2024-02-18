@@ -1,12 +1,12 @@
 import { toast } from 'vue3-toastify'
 
 const show = {
-    success: (messege) => {
+    success: (message) => {
         setTimeout(() => {
-            toast.success(messege)
+            toast.success(message)
         }, 0)
     },
-    error: (messege) => toast.error(messege),
+    error: (message) => toast.error(message),
 }
 
 export { show }

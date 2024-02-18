@@ -35,9 +35,12 @@ const registerFunction = async () => {
             await store.dispatch('signup', {
                 ...registerData,
             })
-            emitClickBack()
+            setTimeout(() => router.push('/'), 2000)
+            for (const item in registerData) {
+                registerData[item] = ''
+            }
         } catch (error) {
-            toast.error(error)
+            console.log(error)
         } finally {
             loading.value = false
         }
@@ -49,9 +52,7 @@ const registerFunction = async () => {
 <template>
     <div>
         <LoadingComponent v-if="loading" />
-        <div
-            class="w-[400px] flex flex-col justify-center items-start mx-auto my-auto"
-        >
+        <div class="flex flex-col justify-center items-center mx-auto my-auto">
             <div
                 class="h-2/3 flex flex-col justify-center items-start mx-auto my-auto"
             >

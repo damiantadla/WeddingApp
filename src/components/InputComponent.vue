@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-80 mt-4">
+    <div class="relative w-80 my-2">
         <input
             class="placeholder-gray-400 text-black text-lg relative w-full rounded-lg p-3"
             :type="type"

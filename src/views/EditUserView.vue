@@ -73,7 +73,7 @@ const updateData = async () => {
         >
             <IconComponent class="xl:hidden mt-10" />
             <div class="flex flex-col justify-center items-center mt-6">
-                <TitleComponent text="Update your data" />
+                <TitleComponent text="Update your data" class="text-4xl my-5" />
             </div>
             <div class="flex flex-col justify-center items-center mt-4">
                 <InputComponent

@@ -168,7 +168,7 @@ const addFileToVariable = (event) => {
     <MenuView class="mb-15" />
     <IconComponent class="xl:hidden mt-8" />
     <div class="flex flex-col p-8 justify-center items-center">
-        <TitleComponent text="Inspirations" class="text-3xl mb-4" />
+        <TitleComponent text="Inspirations" class="text-5xl my-10" />
         <div
             class="my-4 w-full text-white"
             v-for="(category, index) in data.categories"

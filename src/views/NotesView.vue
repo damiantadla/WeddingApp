@@ -95,7 +95,7 @@ const changeData = (val) => {
     <TitleComponent
         v-if="!visibleEditor"
         text="Notes"
-        class="text-center text-4xl mt-10"
+        class="text-center text-5xl my-10"
     />
     <InputComponent
         placeholder="Search by title"
@@ -105,7 +105,7 @@ const changeData = (val) => {
 
     <div class="flex justify-center mt-20">
         <ul
-            class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"
+            class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
         >
             <li
                 v-for="item in computedList"

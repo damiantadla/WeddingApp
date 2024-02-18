@@ -6,6 +6,7 @@ import { useStore } from 'vuex'
 
 import TitleComponent from '@/components/TitleComponent.vue'
 import InputComponent from '@/components/InputComponent.vue'
+import IconComponent from '@/components/IconComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import HeartComponent from '@/components/HeartComponent.vue'
 import GoBackComponent from '@/components/GoBackComponent.vue'
@@ -25,11 +26,10 @@ const sendEmail = async () => {
 </script>
 <template>
     <div
-        class="max-w-sm flex flex-col justify-center items-start mx-auto my-auto"
+        class="max-w-sm flex flex-col justify-center items-center mx-auto my-auto"
     >
-        <div
-            class="pt-10 h-2/3 flex flex-col justify-center items-start mx-auto my-auto"
-        >
+        <div class="pt-10 h-2/3 flex flex-col justify-center items-start">
+            <IconComponent class="mx-auto mb-10" />
             <TitleComponent text="Recover password" />
             <InputComponent
                 v-model="email"

@@ -126,8 +126,12 @@ const updateData = async () => {
         <div class="relative z-20">
             <div
                 v-if="!store.getters.getData?.partnerWedding"
-                class="w-full pt-20 flex flex-col justify-center items-center"
+                class="w-full pt-10 flex flex-col justify-center items-center"
             >
+                <TitleComponent
+                    text="Add your details"
+                    class="text-4xl mb-10"
+                />
                 <InputComponent
                     v-model="data.partnerWedding"
                     icon="fa-user-group"
@@ -224,7 +228,13 @@ const updateData = async () => {
                 />
             </div>
         </div>
-        <LineComponent class="hidden xl:block" />
-        <PlannerView class="hidden xl:block" />
+        <LineComponent
+            v-if="store.getters.getData?.partnerWedding"
+            class="hidden xl:block"
+        />
+        <PlannerView
+            v-if="store.getters.getData?.partnerWedding"
+            class="hidden xl:block"
+        />
     </div>
 </template>

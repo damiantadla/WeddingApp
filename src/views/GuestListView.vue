@@ -108,15 +108,15 @@ const sendGuest = async () => {
                 data: { ...state },
                 path: `/users/${store.getters.id}/guests`,
             })
-            console.log(state.whoseGuests)
+
             state.whoseGuests === 'groom'
                 ? dataGroom.value.push({ ...state, visible: false })
                 : dataBride.value.push({ ...state, visible: false })
             for (const item in state) {
-                state[item] = ''
+                item !== 'whoseGuests' ? (state[item] = '') : null
             }
             isVisibleAddGuest.value = false
-            toast.success('Add your guests')
+            toast.success('Guests added')
         } else {
             toast.error('Please provide more information')
         }
@@ -144,7 +144,6 @@ const getGuests = async () => {
                   visible: false,
               })
     })
-    console.log(dataGroom.value)
 }
 
 const deleteGuest = async (id) => {
@@ -231,18 +230,13 @@ const generatePDF = () => {
 }
 
 onBeforeMount(getGuests)
-const onChangeMethod = () => {
-    // Tu dodaj kod, który ma się wykonać po zmianie wartości w <select>
-    // Na przykład, możesz skorzystać z wartości state.whoseGuests
-    console.log('Zmieniono wartość:', state.whoseGuests)
-}
 </script>
 
 <template>
     <LoadingComponent v-if="isLoading" />
     <IconComponent class="mt-6 xl:hidden" />
     <MenuView class="hidden xl:block mb-20" />
-    <div class="flex flex-col xl:flex-row justify-center">
+    <div class="flex-col xl:flex-row justify-center">
         <div class="xl:mr-20">
             <div class="flex justify-center items-center flex-col">
                 <TitleComponent
@@ -265,7 +259,7 @@ const onChangeMethod = () => {
                     <ParafComponent
                         :text="'Total guests: ' + stats.totalGuests"
                     />
-                    <ParafComponent :text="'His guests:' + stats.hisGuests" />
+                    <ParafComponent :text="'His guests: ' + stats.hisGuests" />
                     <ParafComponent :text="'Her guests: ' + stats.herGuests" />
                     <ParafComponent
                         :text="'Children: ' + stats.totalChildren"
@@ -281,12 +275,12 @@ const onChangeMethod = () => {
         </div>
         <LineComponent class="hidden xl:block" />
         <div class="flex justify-center">
-            <div>
+            <div class="flex flex-col justify-center items-center">
                 <h1
                     class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-3 mt-6 text-white text-xl font-bold bg-glacier rounded-lg"
                     @click="isVisibleHisGuestList = !isVisibleHisGuestList"
                 >
-                    His guest
+                    His guests
                     <font-awesome-icon
                         :icon="
                             !isVisibleHisGuestList
@@ -303,14 +297,14 @@ const onChangeMethod = () => {
                         <li
                             v-for="(item, index) in dataGroom"
                             :key="index"
-                            class="flex flex-col items-center"
+                            class="flex flex-col items-center justify-center"
                         >
                             <div
                                 @click="
                                     dataGroom[index].visible =
                                         !dataGroom[index].visible
                                 "
-                                class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+                                class="relative z-20 flex justify-between items-center w-80 h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
                             >
                                 <div class="p-2">
                                     {{ item.guestName }}
@@ -411,7 +405,7 @@ const onChangeMethod = () => {
                 class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-6 mb-3 text-white text-xl font-bold bg-glacier rounded-lg"
                 @click="isVisibleHerGuestList = !isVisibleHerGuestList"
             >
-                Her guest
+                Her guests
                 <font-awesome-icon
                     :icon="
                         !isVisibleHerGuestList
@@ -437,7 +431,7 @@ const onChangeMethod = () => {
                                     dataBride[index].visible =
                                         !dataBride[index].visible
                                 "
-                                class="relative z-20 flex justify-between items-center w-[290px] h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
+                                class="relative z-20 flex justify-between items-center w-80 h-[60px] px-4 mt-3 mx-10 text-black text-base font-bold bg-white rounded-lg"
                             >
                                 <div class="p-2">
                                     {{ item.guestName }}
@@ -593,7 +587,6 @@ const onChangeMethod = () => {
                             name="category"
                             id="category-select"
                             class="w-[150px] h-[50px] text-black rounded-lg p-2 mt-5"
-                            @change="onChangeMethod"
                         >
                             <option value="groom" selected>
                                 Groom's guests
@@ -609,7 +602,10 @@ const onChangeMethod = () => {
                                 :icon="['far', 'circle-left']"
                                 class="text-6xl text-white ml-4"
                             />
-                            <SendComponent @click="sendGuest" class="mr-4" />
+                            <SendComponent
+                                @click="sendGuest"
+                                class="mr-4 z-50"
+                            />
                         </div>
                     </div>
                 </div>

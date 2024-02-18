@@ -102,20 +102,20 @@ const generatePDF = () => {
         unit: 'in',
         format: 'letter',
     })
-    // text is placed using x, y coordinates
+
     doc.setFontSize(16).text('Wedding Music List', 0.5, 1.0)
-    // create a line under heading
+
     doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1)
-    // Using autoTable plugin
+
 
     doc.autoTable({
         columns,
         body: computedData.value,
         margin: { left: 0.5, top: 1.25 },
     })
-    //Create stats
 
-    //Create footer and save to file
+
+
     doc.setFontSize(10)
     doc.text(
         'WeddingApp. Created by Damian Tadla. Contact: damiantadla@gmail.com',
@@ -131,48 +131,50 @@ const generatePDF = () => {
     <div class="w-[400px]">
         <IconComponent class="mt-8 xl:hidden" />
         <TitleComponent
-            text="Add song"
-            class="w-screen mt-20 text-center text-3xl"
+            text="Song list"
+            class="w-screen mt-20 mb-10 text-center text-5xl"
         />
-        <div class="flex flex-col items-center w-screen">
-            <div class="w-80 flex mt-4 mb-4 m-auto">
+        <div
+            class="flex flex-col xl:flex-row items-center justify-center w-screen"
+        >
+            <div class="flex w-[320px]">
                 <InputComponent
                     placeholder="Link"
                     icon="fa-brands fa-youtube"
                     v-model="link"
                     @keyup.enter="addMusic"
+                    class="w-[260px]"
                 />
                 <button
-                    class="border-2 w-[60px] h-[50px] mt-4 ml-2 rounded-full"
+                    class="border-2 w-[52px] h-[52px] ml-[8px] rounded-full mt-2"
                     @click="addMusic"
                 >
                     <font-awesome-icon
                         :icon="['fas', 'plus']"
-                        class="text-2xl"
+                        class="text-2xl text-white"
                     />
                 </button>
             </div>
-            <ButtonComponent
-                @click="generatePDF"
-                text="Generate the song list"
-                class="text-center w-80"
-            />
+            <div>
+                <ButtonComponent
+                    @click="generatePDF"
+                    text="Generate the song list"
+                    class="text-center w-[320px] mx-6 my-4"
+                />
+            </div>
             <InputComponent
                 placeholder="Search by title"
-                class="m-auto"
+                class="w-[320px]"
                 :icon="['fas', 'magnifying-glass']"
                 v-model="searchTitle"
             />
         </div>
     </div>
-    <TitleComponent
-        text="Song list"
-        class="w-screen mt-20 text-center text-3xl"
-    />
+
     <div class="flex justify-center items-center w-screen max-w-screen">
         <div
             v-if="data"
-            class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+            class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
         >
             <div
                 class="flex flex-col items-center my-4"

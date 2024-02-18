@@ -20,6 +20,7 @@ export default {
     actions: {
         async signup({ dispatch }, { email, password, name, surname }) {
             if (!name || !surname) {
+                // Zakładając, że show to usługa powiadomień
                 show.error('Please provide more information')
                 return
             }

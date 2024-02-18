@@ -111,7 +111,7 @@ const updateData = () => {
                 maxlength="17"
                 type="text"
                 placeholder="Title"
-                class="w-full text-base text-white bg-transparent placeholder-white border-[2px] py-2 px-3 rounded-xl"
+                class="w-fulltext-base text-white bg-transparent placeholder-white border-[2px] py-2 px-3 rounded-xl"
             />
 
             <quill-editor
@@ -148,8 +148,4 @@ const updateData = () => {
         </div>
     </div>
 </template>
-<style scoped>
-.ql-editor > p {
-    color: white !important;
-}
-</style>
+
