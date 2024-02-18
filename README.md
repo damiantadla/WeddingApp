@@ -1,5 +1,5 @@
 
-![Logo](https://firebasestorage.googleapis.com/v0/b/weddingapp-6df36.appspot.com/o/Untitled%20design%20(1).png?alt=media&token=4cdc5277-dc42-47e0-9f46-2ab953524dab)
+![Logo](https://firebasestorage.googleapis.com/v0/b/weddingapp-6df36.appspot.com/o/Untitled%20design%20(2).png?alt=media&token=273a9caf-5a56-475a-a917-08dd6d233f4b)
 
 
 ## Demo
