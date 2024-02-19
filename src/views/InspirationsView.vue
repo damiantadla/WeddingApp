@@ -226,8 +226,8 @@ const addFileToVariable = (event) => {
                     class="fixed z-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
                     <div class="w-[380px] xl:w-[800px] relative p-6">
-                        <img :src="isVisibleImage" alt="Image inspiration" />
-                        <div class="absolute top-0 right-0 py-1 px-2 bg-white">
+                        <img :src="isVisibleImage" alt="Image inspiration" class=""/>
+                        <div class="absolute top-0 right-0 xl:right-20 py-1 px-2 bg-white">
                             <font-awesome-icon
                                 @click="removeItemInspiration"
                                 :icon="['fas', 'trash']"

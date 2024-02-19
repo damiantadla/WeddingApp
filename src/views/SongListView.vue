@@ -128,15 +128,10 @@ const generatePDF = () => {
 <template>
     <LoadingComponent v-if="isLoading" />
     <MenuView />
-    <div class="w-[400px]">
+    <div class="w-full mx-auto">
         <IconComponent class="mt-8 xl:hidden" />
-        <TitleComponent
-            text="Song list"
-            class="w-screen mt-20 mb-10 text-center text-5xl"
-        />
-        <div
-            class="flex flex-col xl:flex-row items-center justify-center w-screen"
-        >
+        <TitleComponent text="Song list" class="mt-20 mb-10 text-center text-5xl" />
+        <div class=" flex flex-col xl:flex-row items-center justify-center">
             <div class="flex w-[320px]">
                 <InputComponent
                     placeholder="Link"
@@ -149,10 +144,7 @@ const generatePDF = () => {
                     class="border-2 w-[52px] h-[52px] ml-[8px] rounded-full mt-2"
                     @click="addMusic"
                 >
-                    <font-awesome-icon
-                        :icon="['fas', 'plus']"
-                        class="text-2xl text-white"
-                    />
+                    <font-awesome-icon :icon="['fas', 'plus']" class="text-2xl text-white" />
                 </button>
             </div>
             <div>
@@ -165,13 +157,13 @@ const generatePDF = () => {
             <InputComponent
                 placeholder="Search by title"
                 class="w-[320px]"
-                :icon="['fas', 'magnifying-glass']"
-                v-model="searchTitle"
+            :icon="['fas', 'magnifying-glass']"
+            v-model="searchTitle"
             />
         </div>
     </div>
 
-    <div class="flex justify-center items-center w-screen max-w-screen">
+    <div class="flex justify-center items-center">
         <div
             v-if="data"
             class="max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"

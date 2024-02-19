@@ -35,15 +35,6 @@ const state = reactive({
     whoseGuests: 'groom',
 })
 
-const updateState = reactive({
-    children: '',
-    overnightStays: '',
-    phoneNumber: '',
-    address: '',
-    isInvited: '',
-    confirmedGuest: '',
-})
-
 const statsHisGuests = () => {}
 
 const calculateGuests = (guestList, item) => {
@@ -92,7 +83,6 @@ const isVisibleAddGuest = ref(false)
 const isVisibleHisGuestList = ref(false)
 const isVisibleHerGuestList = ref(false)
 const isLoading = ref(false)
-const category = ref('bride')
 
 const sendGuest = async () => {
     isLoading.value = true
@@ -109,11 +99,21 @@ const sendGuest = async () => {
                 path: `/users/${store.getters.id}/guests`,
             })
 
-            state.whoseGuests === 'groom'
-                ? dataGroom.value.push({ ...state, visible: false })
-                : dataBride.value.push({ ...state, visible: false })
-            for (const item in state) {
-                item !== 'whoseGuests' ? (state[item] = '') : null
+            const newGuest = { ...state, visible: false }
+            if (state.whoseGuests === 'groom') {
+                dataGroom.value.push(newGuest)
+            } else {
+                dataBride.value.push(newGuest)
+            }
+
+            // Reset state
+            for (const key in state) {
+                if (state[key] === 'groom' || state[key] === 'bride'){
+                    state[key] = 'groom'
+                } else {
+                    state[key] = ''
+                }
+
             }
             isVisibleAddGuest.value = false
             toast.success('Guests added')
@@ -134,34 +134,46 @@ const getGuests = async () => {
     res.forEach((doc) => {
         doc.data().whoseGuests === 'groom'
             ? dataGroom.value.push({
-                  ...doc.data(),
-                  id: doc.id,
-                  visible: false,
-              })
+                ...doc.data(),
+                id: doc.id,
+                visible: false,
+            })
             : dataBride.value.push({
-                  ...doc.data(),
-                  id: doc.id,
-                  visible: false,
-              })
+                ...doc.data(),
+                id: doc.id,
+                visible: false,
+            })
     })
 }
 
-const deleteGuest = async (id) => {
+const deleteGuest = async (id, category) => {
     await store.dispatch('deleteDoc', {
         path: `users/${store.getters.id}/guests`,
         id,
     })
-    dataGroom.value = dataGroom.value.filter((item) => item.id !== id)
-    dataBride.value = dataGroom.value.filter((item) => item.id !== id)
+
+    if (category === 'bride') {
+        dataBride.value = dataBride.value.filter((item) => item.id !== id)
+    } else {
+        dataGroom.value = dataGroom.value.filter((item) => item.id !== id)
+    }
 }
 
-const updateGuest = async (id) => {
-    const filterData = {}
-    for (const key in updateState) {
-        if (updateState[key] !== '') filterData[key] = updateState[key]
+const updateGuest = async (id, category) => {
+    const guestToUpdate = category === 'bride' ? dataBride.value.find(guest => guest.id === id) : dataGroom.value.find(guest => guest.id === id)
+    if (!guestToUpdate) {
+        return
+    }
+    const updateData = {
+        children: guestToUpdate.children,
+        overnightStays: guestToUpdate.overnightStays,
+        phoneNumber: guestToUpdate.phoneNumber,
+        address: guestToUpdate.address,
+        isInvited: guestToUpdate.isInvited,
+        confirmedGuest: guestToUpdate.confirmedGuest,
     }
     await store.dispatch('updateDoc', {
-        data: { ...filterData },
+        data: updateData,
         path: `users/${store.getters.id}/guests/${id}`,
     })
 }
@@ -193,18 +205,18 @@ const generatePDF = () => {
         unit: 'in',
         format: 'letter',
     })
-    // text is placed using x, y coordinates
+
     doc.setFontSize(16).text(dataPdf.heading, 0.5, 1.0)
-    // create a line under heading
+
     doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1)
-    // Using autoTable plugin
+
     doc.setFontSize(12).text(dataPdf.stats, 0.5, 1.35, {
         align: 'left',
         maxWidth: '7.5',
     })
     doc.setFontSize(16).text("Groom's guests / Bride's guests", 0.5, 2.8)
     doc.setLineWidth(0.01).line(0.5, 2.9, 8.0, 2.9)
-    // create a line under heading
+
     doc.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1)
 
     doc.autoTable({
@@ -218,9 +230,9 @@ const generatePDF = () => {
         body: dataBride.value,
         margin: { left: 0.5, top: 1.25 },
     })
-    //Create stats
 
-    //Create footer and save to file
+
+
     doc.setFontSize(10)
     doc.text(
         'WeddingApp. Created by Damian Tadla. Contact: damiantadla@gmail.com',
@@ -236,7 +248,7 @@ onBeforeMount(getGuests)
     <LoadingComponent v-if="isLoading" />
     <IconComponent class="mt-6 xl:hidden" />
     <MenuView class="hidden xl:block mb-20" />
-    <div class="flex-col xl:flex-row justify-center">
+    <div class="flex flex-col xl:flex-row justify-center">
         <div class="xl:mr-20">
             <div class="flex justify-center items-center flex-col">
                 <TitleComponent
@@ -275,7 +287,7 @@ onBeforeMount(getGuests)
         </div>
         <LineComponent class="hidden xl:block" />
         <div class="flex justify-center">
-            <div class="flex flex-col justify-center items-center">
+            <div class="flex flex-col items-center">
                 <h1
                     class="flex justify-between items-center w-80 px-4 py-3.5 mx-10 my-3 mt-6 text-white text-xl font-bold bg-glacier rounded-lg"
                     @click="isVisibleHisGuestList = !isVisibleHisGuestList"
@@ -327,28 +339,28 @@ onBeforeMount(getGuests)
                                     <div class="text-black p-5">
                                         <p class="">Phone number</p>
                                         <input
-                                            v-model="updateState.phoneNumber"
+                                            v-model="item.phoneNumber"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.phoneNumber"
                                         />
                                         <p>Number of children</p>
                                         <input
-                                            v-model="updateState.children"
+                                            v-model="item.children"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.children"
                                         />
                                         <p>Overnight stays</p>
                                         <input
-                                            v-model="updateState.overnightStays"
+                                            v-model="item.overnightStays"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.overnightStays"
                                         />
                                         <p>Address</p>
                                         <input
-                                            v-model="updateState.address"
+                                            v-model="item.address"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.address"
@@ -358,38 +370,30 @@ onBeforeMount(getGuests)
                                             <input
                                                 v-model="item.isInvited"
                                                 type="checkbox"
-                                                @change="
-                                                    updateState.isInvited =
-                                                        item.isInvited
-                                                "
                                             /><label class="ml-2"
-                                                >Are they invited?</label
-                                            >
+                                        >Are they invited?</label
+                                        >
                                         </div>
 
                                         <div class="p-1.5">
                                             <input
                                                 v-model="item.confirmedGuest"
                                                 type="checkbox"
-                                                @change="
-                                                    updateState.confirmedGuest =
-                                                        item.confirmedGuest
-                                                "
                                             /><label class="ml-2"
-                                                >Did they confirm?</label
-                                            >
+                                        >Did they confirm?</label
+                                        >
                                         </div>
 
                                         <div class="ml-auto text-right">
                                             <font-awesome-icon
                                                 :icon="['fas', 'circle-xmark']"
                                                 class="text-4xl py-3 text-hippiePink"
-                                                @click="deleteGuest(item.id)"
+                                                @click="deleteGuest(item.id, 'groom')"
                                             />
                                             <font-awesome-icon
                                                 :icon="['fas', 'circle-check']"
                                                 class="text-4xl py-3 ml-3 text-tropicalRainForest"
-                                                @click="updateGuest(item.id)"
+                                                @click="updateGuest(item.id, 'groom')"
                                             />
                                         </div>
                                     </div>
@@ -454,28 +458,28 @@ onBeforeMount(getGuests)
                                     <div class="text-black p-5">
                                         <p class="">Phone number</p>
                                         <input
-                                            v-model="updateState.phoneNumber"
+                                            v-model="item.phoneNumber"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.phoneNumber"
                                         />
                                         <p>Number of children</p>
                                         <input
-                                            v-model="updateState.children"
+                                            v-model="item.children"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.children"
                                         />
                                         <p>Overnight stays</p>
                                         <input
-                                            v-model="updateState.overnightStays"
+                                            v-model="item.overnightStays"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.overnightStays"
                                         />
                                         <p>Address</p>
                                         <input
-                                            v-model="updateState.address"
+                                            v-model="item.address"
                                             type="text"
                                             class="rounded-xl py-0.5 px-2 w-full placeholder-black"
                                             :placeholder="item.address"
@@ -485,38 +489,30 @@ onBeforeMount(getGuests)
                                             <input
                                                 v-model="item.isInvited"
                                                 type="checkbox"
-                                                @change="
-                                                    updateState.isInvited =
-                                                        item.isInvited
-                                                "
                                             /><label class="ml-2"
-                                                >Are they invited?</label
-                                            >
+                                        >Are they invited?</label
+                                        >
                                         </div>
 
                                         <div class="p-1.5">
                                             <input
                                                 v-model="item.confirmedGuest"
                                                 type="checkbox"
-                                                @change="
-                                                    updateState.confirmedGuest =
-                                                        item.confirmedGuest
-                                                "
                                             /><label class="ml-2"
-                                                >Did they confirm?</label
-                                            >
+                                        >Did they confirm?</label
+                                        >
                                         </div>
 
                                         <div class="ml-auto text-right">
                                             <font-awesome-icon
                                                 :icon="['fas', 'circle-xmark']"
                                                 class="text-4xl py-3 text-hippiePink"
-                                                @click="deleteGuest(item.id)"
+                                                @click="deleteGuest(item.id, 'bride')"
                                             />
                                             <font-awesome-icon
                                                 :icon="['fas', 'circle-check']"
                                                 class="text-4xl py-3 ml-3 text-tropicalRainForest"
-                                                @click="updateGuest(item.id)"
+                                                @click="updateGuest(item.id, 'bride')"
                                             />
                                         </div>
                                     </div>

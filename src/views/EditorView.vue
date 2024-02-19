@@ -102,7 +102,7 @@ const updateData = () => {
 </script>
 <template>
     <div
-        class="fixed z-100 bottom-0 right-0 h-[550px] flex flex-col justify-center bg-glacier rounded-tl-xl"
+        class="fixed z-100 bottom-0 right-0 h-[550px] w-max-[400px] flex flex-col justify-center bg-glacier rounded-tl-xl"
     >
         <div class="px-8 flex flex-col">
             <TitleComponent text="Editor" class="mt-5 ml-5 mb-4" />
@@ -111,7 +111,7 @@ const updateData = () => {
                 maxlength="17"
                 type="text"
                 placeholder="Title"
-                class="w-fulltext-base text-white bg-transparent placeholder-white border-[2px] py-2 px-3 rounded-xl"
+                class="w-fulltext-base text-white bg-transparent placeholder-white border-[2px] py-2 px-3 rounded-t-xl"
             />
 
             <quill-editor
